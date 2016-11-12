@@ -1,0 +1,15 @@
+﻿<Properties StartupConfiguration="{DB22B5EA-8C8D-4C89-AE08-054EF5BF982F}|Default">
+  <MonoDevelop.Ide.ItemProperties.MonoSerial PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.Workbench ActiveDocument="MainWindow.cs">
+    <Files>
+      <File FileName="MainWindow.cs" Line="82" Column="2" />
+      <File FileName="Program.cs" Line="13" Column="1" />
+      <File FileName="MonoSerial.csproj" Line="11" Column="17" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+</Properties>
