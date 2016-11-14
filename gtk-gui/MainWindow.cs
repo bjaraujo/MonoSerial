@@ -27,7 +27,7 @@ public partial class MainWindow
 	
 	private global::Gtk.ScrolledWindow GtkScrolledWindow;
 	
-	private global::Gtk.TextView textview1;
+	private global::Gtk.TextView txtSerialData;
 	
 	private global::Gtk.Entry txtCommand;
 
@@ -136,11 +136,11 @@ public partial class MainWindow
 		this.GtkScrolledWindow.Name = "GtkScrolledWindow";
 		this.GtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
 		// Container child GtkScrolledWindow.Gtk.Container+ContainerChild
-		this.textview1 = new global::Gtk.TextView ();
-		this.textview1.CanFocus = true;
-		this.textview1.Name = "textview1";
-		this.textview1.Editable = false;
-		this.GtkScrolledWindow.Add (this.textview1);
+		this.txtSerialData = new global::Gtk.TextView ();
+		this.txtSerialData.CanFocus = true;
+		this.txtSerialData.Name = "txtSerialData";
+		this.txtSerialData.Editable = false;
+		this.GtkScrolledWindow.Add (this.txtSerialData);
 		this.vbox1.Add (this.GtkScrolledWindow);
 		global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.GtkScrolledWindow]));
 		w12.Position = 1;

@@ -5,11 +5,12 @@
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument="MainWindow.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="gtk-gui\MainWindow.cs">
     <Files>
-      <File FileName="MainWindow.cs" Line="82" Column="2" />
+      <File FileName="MainWindow.cs" Line="116" Column="17" />
       <File FileName="Program.cs" Line="13" Column="1" />
       <File FileName="MonoSerial.csproj" Line="11" Column="17" />
+      <File FileName="gtk-gui\MainWindow.cs" Line="153" Column="23" />
     </Files>
   </MonoDevelop.Ide.Workbench>
 </Properties>
