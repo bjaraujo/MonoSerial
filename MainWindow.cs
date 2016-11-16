@@ -1,5 +1,6 @@
 ﻿using System;
 using Gtk;
+using System.IO;
 using System.IO.Ports;
 using System.Threading;
 using System.Text;
@@ -234,5 +235,38 @@ public partial class MainWindow : Gtk.Window
 	protected void OnExitActionActivated(object sender, EventArgs e)
 	{
 		ExitApplication();
+	}
+
+	protected void OnSendFileActionActivated(object sender, EventArgs e)
+	{
+
+		Gtk.FileChooserDialog aFileChooser = new Gtk.FileChooserDialog("Choose the file to open",
+				this,
+				FileChooserAction.Open,
+				"Cancel", ResponseType.Cancel,
+				"Open", ResponseType.Accept);
+
+		if (aFileChooser.Run() == (int)ResponseType.Accept)
+		{
+
+			try
+			{
+
+				string aText = File.ReadAllText(aFileChooser.Filename);
+				_serialPort.Write(aText);
+
+			}
+			catch (Exception)
+			{
+
+				this.txtSerialData.Buffer.Text += "Error: Unable to write data to serial port." + Environment.NewLine;
+				this.txtSerialData.ScrollToIter(this.txtSerialData.Buffer.EndIter, 0, false, 0, 0);
+
+			}
+
+		}
+
+		aFileChooser.Destroy();
+
 	}
 }

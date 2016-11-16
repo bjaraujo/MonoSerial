@@ -198,6 +198,7 @@ public partial class MainWindow
 		this.DefaultHeight = 715;
 		this.Show();
 		this.DeleteEvent += new global::Gtk.DeleteEventHandler(this.OnDeleteEvent);
+		this.SendFileAction.Activated += new global::System.EventHandler(this.OnSendFileActionActivated);
 		this.ExitAction.Activated += new global::System.EventHandler(this.OnExitActionActivated);
 		this.cmdConnect.Clicked += new global::System.EventHandler(this.OnCmdConnectClicked);
 		this.txtCommand.KeyReleaseEvent += new global::Gtk.KeyReleaseEventHandler(this.OnTxtCommandKeyReleaseEvent);

@@ -19,6 +19,7 @@
         <property name="Type">Action</property>
         <property name="Label" translatable="yes">Send File...</property>
         <property name="ShortLabel" translatable="yes">Send File...</property>
+        <signal name="Activated" handler="OnSendFileActionActivated" />
       </action>
       <action id="ExitAction">
         <property name="Type">Action</property>
