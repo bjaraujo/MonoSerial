@@ -3,7 +3,11 @@
 
 public partial class MainWindow
 {
+	private global::Gtk.UIManager UIManager;
+
 	private global::Gtk.VBox vbox1;
+
+	private global::Gtk.MenuBar menubar1;
 
 	private global::Gtk.HBox hbox2;
 
@@ -35,12 +39,25 @@ public partial class MainWindow
 	{
 		global::Stetic.Gui.Initialize(this);
 		// Widget MainWindow
+		this.UIManager = new global::Gtk.UIManager();
+		global::Gtk.ActionGroup w1 = new global::Gtk.ActionGroup("Default");
+		this.UIManager.InsertActionGroup(w1, 0);
+		this.AddAccelGroup(this.UIManager.AccelGroup);
 		this.Name = "MainWindow";
 		this.Title = global::Mono.Unix.Catalog.GetString("MainWindow");
 		this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 		// Container child MainWindow.Gtk.Container+ContainerChild
 		this.vbox1 = new global::Gtk.VBox();
 		this.vbox1.Spacing = 6;
+		// Container child vbox1.Gtk.Box+BoxChild
+		this.UIManager.AddUiFromString("<ui><menubar name=\'menubar1\'/></ui>");
+		this.menubar1 = ((global::Gtk.MenuBar)(this.UIManager.GetWidget("/menubar1")));
+		this.menubar1.Name = "menubar1";
+		this.vbox1.Add(this.menubar1);
+		global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.menubar1]));
+		w2.Position = 0;
+		w2.Expand = false;
+		w2.Fill = false;
 		// Container child vbox1.Gtk.Box+BoxChild
 		this.hbox2 = new global::Gtk.HBox();
 		this.hbox2.Name = "hbox2";
@@ -50,10 +67,10 @@ public partial class MainWindow
 		this.lblPort.Name = "lblPort";
 		this.lblPort.LabelProp = global::Mono.Unix.Catalog.GetString("Port:");
 		this.hbox2.Add(this.lblPort);
-		global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.lblPort]));
-		w1.Position = 0;
-		w1.Expand = false;
-		w1.Fill = false;
+		global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.lblPort]));
+		w3.Position = 0;
+		w3.Expand = false;
+		w3.Fill = false;
 		// Container child hbox2.Gtk.Box+BoxChild
 		this.txtPort = new global::Gtk.Entry();
 		this.txtPort.CanFocus = true;
@@ -61,17 +78,17 @@ public partial class MainWindow
 		this.txtPort.IsEditable = true;
 		this.txtPort.InvisibleChar = '•';
 		this.hbox2.Add(this.txtPort);
-		global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.txtPort]));
-		w2.Position = 1;
+		global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.txtPort]));
+		w4.Position = 1;
 		// Container child hbox2.Gtk.Box+BoxChild
 		this.lblBaudRate = new global::Gtk.Label();
 		this.lblBaudRate.Name = "lblBaudRate";
 		this.lblBaudRate.LabelProp = global::Mono.Unix.Catalog.GetString("Baud Rate:");
 		this.hbox2.Add(this.lblBaudRate);
-		global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.lblBaudRate]));
-		w3.Position = 2;
-		w3.Expand = false;
-		w3.Fill = false;
+		global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.lblBaudRate]));
+		w5.Position = 2;
+		w5.Expand = false;
+		w5.Fill = false;
 		// Container child hbox2.Gtk.Box+BoxChild
 		this.txtBaudRate = new global::Gtk.Entry();
 		this.txtBaudRate.CanFocus = true;
@@ -79,42 +96,42 @@ public partial class MainWindow
 		this.txtBaudRate.IsEditable = true;
 		this.txtBaudRate.InvisibleChar = '•';
 		this.hbox2.Add(this.txtBaudRate);
-		global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.txtBaudRate]));
-		w4.Position = 3;
+		global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.txtBaudRate]));
+		w6.Position = 3;
 		// Container child hbox2.Gtk.Box+BoxChild
 		this.lblParity = new global::Gtk.Label();
 		this.lblParity.Name = "lblParity";
 		this.lblParity.LabelProp = global::Mono.Unix.Catalog.GetString("Parity:");
 		this.hbox2.Add(this.lblParity);
-		global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.lblParity]));
-		w5.Position = 4;
-		w5.Expand = false;
-		w5.Fill = false;
+		global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.lblParity]));
+		w7.Position = 4;
+		w7.Expand = false;
+		w7.Fill = false;
 		// Container child hbox2.Gtk.Box+BoxChild
 		this.cmbParity = global::Gtk.ComboBox.NewText();
 		this.cmbParity.Name = "cmbParity";
 		this.hbox2.Add(this.cmbParity);
-		global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.cmbParity]));
-		w6.Position = 5;
-		w6.Expand = false;
-		w6.Fill = false;
+		global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.cmbParity]));
+		w8.Position = 5;
+		w8.Expand = false;
+		w8.Fill = false;
 		// Container child hbox2.Gtk.Box+BoxChild
 		this.lblStopBits = new global::Gtk.Label();
 		this.lblStopBits.Name = "lblStopBits";
 		this.lblStopBits.LabelProp = global::Mono.Unix.Catalog.GetString("Stop Bits:");
 		this.hbox2.Add(this.lblStopBits);
-		global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.lblStopBits]));
-		w7.Position = 6;
-		w7.Expand = false;
-		w7.Fill = false;
+		global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.lblStopBits]));
+		w9.Position = 6;
+		w9.Expand = false;
+		w9.Fill = false;
 		// Container child hbox2.Gtk.Box+BoxChild
 		this.cmbStopBits = global::Gtk.ComboBox.NewText();
 		this.cmbStopBits.Name = "cmbStopBits";
 		this.hbox2.Add(this.cmbStopBits);
-		global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.cmbStopBits]));
-		w8.Position = 7;
-		w8.Expand = false;
-		w8.Fill = false;
+		global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.cmbStopBits]));
+		w10.Position = 7;
+		w10.Expand = false;
+		w10.Fill = false;
 		// Container child hbox2.Gtk.Box+BoxChild
 		this.cmdConnect = new global::Gtk.Button();
 		this.cmdConnect.CanFocus = true;
@@ -122,14 +139,14 @@ public partial class MainWindow
 		this.cmdConnect.UseUnderline = true;
 		this.cmdConnect.Label = global::Mono.Unix.Catalog.GetString("Connect");
 		this.hbox2.Add(this.cmdConnect);
-		global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.cmdConnect]));
-		w9.Position = 9;
-		w9.Expand = false;
-		w9.Fill = false;
+		global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.cmdConnect]));
+		w11.Position = 9;
+		w11.Expand = false;
+		w11.Fill = false;
 		this.vbox1.Add(this.hbox2);
-		global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.hbox2]));
-		w10.Position = 0;
-		w10.Expand = false;
+		global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.hbox2]));
+		w12.Position = 1;
+		w12.Expand = false;
 		// Container child vbox1.Gtk.Box+BoxChild
 		this.GtkScrolledWindow = new global::Gtk.ScrolledWindow();
 		this.GtkScrolledWindow.Name = "GtkScrolledWindow";
@@ -137,12 +154,12 @@ public partial class MainWindow
 		// Container child GtkScrolledWindow.Gtk.Container+ContainerChild
 		this.txtSerialData = new global::Gtk.TextView();
 		this.txtSerialData.CanFocus = true;
-		this.txtSerialData.Name = "textview1";
+		this.txtSerialData.Name = "txtSerialData";
 		this.txtSerialData.Editable = false;
 		this.GtkScrolledWindow.Add(this.txtSerialData);
 		this.vbox1.Add(this.GtkScrolledWindow);
-		global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.GtkScrolledWindow]));
-		w12.Position = 1;
+		global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.GtkScrolledWindow]));
+		w14.Position = 2;
 		// Container child vbox1.Gtk.Box+BoxChild
 		this.txtCommand = new global::Gtk.Entry();
 		this.txtCommand.CanFocus = true;
@@ -150,16 +167,16 @@ public partial class MainWindow
 		this.txtCommand.IsEditable = true;
 		this.txtCommand.InvisibleChar = '•';
 		this.vbox1.Add(this.txtCommand);
-		global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.txtCommand]));
-		w13.Position = 2;
-		w13.Expand = false;
-		w13.Fill = false;
+		global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.txtCommand]));
+		w15.Position = 3;
+		w15.Expand = false;
+		w15.Fill = false;
 		this.Add(this.vbox1);
 		if ((this.Child != null))
 		{
 			this.Child.ShowAll();
 		}
-		this.DefaultWidth = 1024;
+		this.DefaultWidth = 1023;
 		this.DefaultHeight = 715;
 		this.Show();
 		this.DeleteEvent += new global::Gtk.DeleteEventHandler(this.OnDeleteEvent);
