@@ -92,7 +92,7 @@ public partial class MainWindow : Gtk.Window
 
 	}
 
-	protected void OnDeleteEvent(object sender, DeleteEventArgs a)
+	protected void ExitApplication()
 	{
 
 		_serialPort.Close();
@@ -101,7 +101,15 @@ public partial class MainWindow : Gtk.Window
 		t.Join();
 
 		Application.Quit();
+
+	}
+
+	protected void OnDeleteEvent(object sender, DeleteEventArgs a)
+	{
+
+		ExitApplication();
 		a.RetVal = true;
+
 	}
 
 	protected void OnTxtCommandKeyReleaseEvent(object o, KeyReleaseEventArgs args)
@@ -221,5 +229,10 @@ public partial class MainWindow : Gtk.Window
 
 		QueueDraw();
 
+	}
+
+	protected void OnExitActionActivated(object sender, EventArgs e)
+	{
+		ExitApplication();
 	}
 }
