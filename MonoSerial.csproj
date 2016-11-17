@@ -58,6 +58,9 @@
       <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="Mono.Posix" />
+    <Reference Include="INIFileParser">
+      <HintPath>packages\ini-parser.2.3.0\lib\net20\INIFileParser.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -70,6 +73,9 @@
     <Compile Include="gtk-gui\MainWindow.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

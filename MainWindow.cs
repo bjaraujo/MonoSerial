@@ -1,10 +1,13 @@
 ﻿using System;
-using Gtk;
 using System.IO;
 using System.IO.Ports;
 using System.Threading;
 using System.Text;
 using System.Diagnostics;
+using System.Configuration;
+using Gtk;
+using IniParser;
+using IniParser.Model;
 
 public partial class MainWindow : Gtk.Window
 {
@@ -100,6 +103,20 @@ public partial class MainWindow : Gtk.Window
 
 	}
 
+	protected void SaveSettings()
+	{
+		string aIniFileName = "MonoSerial.ini";
+			
+		var aParser = new FileIniDataParser();
+		IniData data = aParser.ReadFile(aIniFileName);
+
+		data["UI"]["width"] = this.DefaultWidth.ToString();
+		data["UI"]["height"] = this.DefaultHeight.ToString();
+
+		aParser.WriteFile(aIniFileName, data);
+
+	}
+
 	protected void ExitApplication()
 	{
 
@@ -107,6 +124,8 @@ public partial class MainWindow : Gtk.Window
 		exitApp = true;
 
 		t.Join();
+
+		SaveSettings();
 
 		Application.Quit();
 
