@@ -52,7 +52,7 @@ public partial class MainWindow : Gtk.Window
 
 	}
 
-	public void ReadData()
+	protected void ReadData()
 	{
 
 		while (_serialPort.IsOpen)
@@ -61,9 +61,9 @@ public partial class MainWindow : Gtk.Window
 			try
 			{
 
-				string txt = _serialPort.ReadExisting();
+				string aText = _serialPort.ReadExisting();
 
-				if (txt.Length > 0)
+				if (aText.Length > 0)
 				{
 					Gtk.Application.Invoke(delegate
 					{
@@ -72,8 +72,7 @@ public partial class MainWindow : Gtk.Window
 						if (this.txtSerialData.Buffer.LineCount > 1000)
 							this.txtSerialData.Buffer.Clear();
 
-						this.txtSerialData.Buffer.Text += txt; // + Environment.NewLine;
-						this.txtSerialData.ScrollToIter(txtSerialData.Buffer.EndIter, 0, false, 0, 0);
+						AppendText(aText);
 
 					});
 				}
@@ -90,6 +89,14 @@ public partial class MainWindow : Gtk.Window
 				break;
 
 		};
+
+	}
+
+	protected void AppendText(string aText)
+	{
+
+		this.txtSerialData.Buffer.Text += aText;
+		this.txtSerialData.ScrollToIter(txtSerialData.Buffer.EndIter, 0, false, 0, 0);
 
 	}
 
@@ -189,8 +196,8 @@ public partial class MainWindow : Gtk.Window
 
 				_serialPort.Open();
 				this.cmdConnect.Label = "Close";
-				this.txtSerialData.Buffer.Text += "<Connected to port: " + txtPort.Text + ">" + Environment.NewLine;
-				this.txtSerialData.ScrollToIter(this.txtSerialData.Buffer.EndIter, 0, false, 0, 0);
+
+				AppendText("<Connected to port: " + txtPort.Text + ">" + Environment.NewLine);
 
 				this.txtCommand.IsFocus = true;
 
@@ -201,8 +208,7 @@ public partial class MainWindow : Gtk.Window
 			catch (Exception)
 			{
 
-				this.txtSerialData.Buffer.Text += "Error: Unable to open port: " + txtPort.Text + Environment.NewLine;
-				this.txtSerialData.ScrollToIter(this.txtSerialData.Buffer.EndIter, 0, false, 0, 0);
+				AppendText("Error: Unable to open port: " + txtPort.Text + Environment.NewLine);
 
 			}
 
@@ -214,15 +220,16 @@ public partial class MainWindow : Gtk.Window
 
 				_serialPort.Close();
 				this.cmdConnect.Label = "Open";
-				this.txtSerialData.Buffer.Text += "<Connection closed.>" + Environment.NewLine;
-				this.txtSerialData.ScrollToIter(this.txtSerialData.Buffer.EndIter, 0, false, 0, 0);
+
+				AppendText("<Connection closed.>" + Environment.NewLine);
+
 				t.Join();
+
 			}
 			catch (Exception)
 			{
 
-				this.txtSerialData.Buffer.Text += "Error: closing connection." + Environment.NewLine;
-				this.txtSerialData.ScrollToIter(this.txtSerialData.Buffer.EndIter, 0, false, 0, 0);
+				AppendText("Error: closing connection." + Environment.NewLine);
 
 			}
 
@@ -252,15 +259,15 @@ public partial class MainWindow : Gtk.Window
 			try
 			{
 
-				string aText = File.ReadAllText(aFileChooser.Filename);
-				_serialPort.Write(aText);
+				_serialPort.Write(File.ReadAllText(aFileChooser.Filename));
+
+				AppendText("File sent: " + aFileChooser.Filename + Environment.NewLine);
 
 			}
 			catch (Exception)
 			{
 
-				this.txtSerialData.Buffer.Text += "Error: Unable to write data to serial port." + Environment.NewLine;
-				this.txtSerialData.ScrollToIter(this.txtSerialData.Buffer.EndIter, 0, false, 0, 0);
+				AppendText("Error: Unable to write data to serial port." + Environment.NewLine);
 
 			}
 
