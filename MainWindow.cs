@@ -135,18 +135,16 @@ public partial class MainWindow : Gtk.Window
 		try
 		{
 
-			string aIniFileName = "MonoSerial.ini";
-
 			var aParser = new FileIniDataParser();
 
-			IniData data = aParser.ReadFile(aIniFileName);
+			IniData data = aParser.ReadFile(_iniFileName);
 
 			data["SerialPort"]["Name"] = this.txtPort.Text;
 			data["SerialPort"]["Speed"] = this.txtBaudRate.Text;
 			data["SerialPort"]["Parity"] = this.cmbParity.Active.ToString();
 			data["SerialPort"]["Stopbit"] = this.cmbStopBits.Active.ToString();
 
-			aParser.WriteFile(aIniFileName, data);
+			aParser.WriteFile(_iniFileName, data);
 
 		}
 		catch (Exception e)
