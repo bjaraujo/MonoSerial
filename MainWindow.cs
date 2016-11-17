@@ -13,8 +13,9 @@ public partial class MainWindow : Gtk.Window
 {
 
 	SerialPort _serialPort;
-	Thread t = null;
-	bool exitApp = false;
+	bool _exitApp = false;
+	string _iniFileName = "MonoSerial.ini";
+	Thread _t = null;
 
 	public MainWindow() : base(Gtk.WindowType.Toplevel)
 	{
@@ -50,6 +51,8 @@ public partial class MainWindow : Gtk.Window
 		this.cmbStopBits.Active = 1;
 
 		this.txtSerialData.IsFocus = true;
+
+		LoadSettings();
 
 		_serialPort = new SerialPort();
 
@@ -88,7 +91,7 @@ public partial class MainWindow : Gtk.Window
 
 			Thread.Sleep(20);
 
-			if (exitApp)
+			if (_exitApp)
 				break;
 
 		};
@@ -103,29 +106,66 @@ public partial class MainWindow : Gtk.Window
 
 	}
 
+	protected void LoadSettings()
+	{
+
+		try
+		{
+
+			var aParser = new FileIniDataParser();
+
+			IniData data = aParser.ReadFile(_iniFileName);
+
+			this.txtPort.Text = data["SerialPort"]["Name"];
+			this.txtBaudRate.Text = data["SerialPort"]["Speed"];
+			this.cmbParity.Active = Int32.Parse(data["SerialPort"]["Parity"]);
+			this.cmbStopBits.Active = Int32.Parse(data["SerialPort"]["Stopbit"]);
+
+		}
+		catch (Exception e)
+		{
+			Debug.WriteLine("Exception: " + e.Message);
+		}
+
+	}
+
 	protected void SaveSettings()
 	{
-		string aIniFileName = "MonoSerial.ini";
-			
-		var aParser = new FileIniDataParser();
-		IniData data = aParser.ReadFile(aIniFileName);
 
-		data["UI"]["width"] = this.DefaultWidth.ToString();
-		data["UI"]["height"] = this.DefaultHeight.ToString();
+		try
+		{
 
-		aParser.WriteFile(aIniFileName, data);
+			string aIniFileName = "MonoSerial.ini";
+
+			var aParser = new FileIniDataParser();
+
+			IniData data = aParser.ReadFile(aIniFileName);
+
+			data["SerialPort"]["Name"] = this.txtPort.Text;
+			data["SerialPort"]["Speed"] = this.txtBaudRate.Text;
+			data["SerialPort"]["Parity"] = this.cmbParity.Active.ToString();
+			data["SerialPort"]["Stopbit"] = this.cmbStopBits.Active.ToString();
+
+			aParser.WriteFile(aIniFileName, data);
+
+		}
+		catch (Exception e)
+		{
+			Debug.WriteLine("Exception: " + e.Message);
+		}
 
 	}
 
 	protected void ExitApplication()
 	{
 
-		_serialPort.Close();
-		exitApp = true;
-
-		t.Join();
-
 		SaveSettings();
+
+		_serialPort.Close();
+		_exitApp = true;
+
+		if (_t != null)
+			_t.Join();
 
 		Application.Quit();
 
@@ -220,8 +260,8 @@ public partial class MainWindow : Gtk.Window
 
 				this.txtCommand.IsFocus = true;
 
-				t = new Thread(ReadData);
-				t.Start();
+				_t = new Thread(ReadData);
+				_t.Start();
 
 			}
 			catch (Exception)
@@ -242,7 +282,7 @@ public partial class MainWindow : Gtk.Window
 
 				AppendText("<Connection closed.>" + Environment.NewLine);
 
-				t.Join();
+				_t.Join();
 
 			}
 			catch (Exception)
