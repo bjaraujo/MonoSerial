@@ -35,7 +35,7 @@ public partial class MainWindow : Gtk.Window
 		else
 			this.txtPort.Text = "COM1";
 
-		this.txtBaudRate.Text = "115200";
+		this.txtBaudRate.Text = "9600";
 
 		this.cmbParity.AppendText("None");
 		this.cmbParity.AppendText("Odd");
@@ -120,6 +120,12 @@ public partial class MainWindow : Gtk.Window
 			this.txtBaudRate.Text = data["SerialPort"]["Speed"];
 			this.cmbParity.Active = Int32.Parse(data["SerialPort"]["Parity"]);
 			this.cmbStopBits.Active = Int32.Parse(data["SerialPort"]["Stopbit"]);
+
+			string[] rgbBackgroundColor = data["View"]["BackgroundColor"].Split(',');
+			string[] rgbTextColor = data["View"]["TextColor"].Split(',');
+			            
+			this.txtSerialData.ModifyBase(StateType.Normal, new Gdk.Color(Byte.Parse(rgbBackgroundColor[0]), Byte.Parse(rgbBackgroundColor[1]), Byte.Parse(rgbBackgroundColor[2])));
+			this.txtSerialData.ModifyText(StateType.Normal, new Gdk.Color(Byte.Parse(rgbTextColor[0]), Byte.Parse(rgbTextColor[1]), Byte.Parse(rgbTextColor[2])));
 
 		}
 		catch (Exception e)
