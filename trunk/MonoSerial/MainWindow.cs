@@ -2,9 +2,7 @@
 using System.IO;
 using System.IO.Ports;
 using System.Threading;
-using System.Text;
 using System.Diagnostics;
-using System.Configuration;
 using Gtk;
 using IniParser;
 using IniParser.Model;
@@ -347,7 +345,15 @@ public partial class MainWindow : Gtk.Window
 			try
 			{
 
-				_serialPort.Write(File.ReadAllText(aFileChooser.Filename));
+				using (FileStream source = new FileStream(aFileChooser.Filename, FileMode.Open))
+				{
+					byte[] buffer = new byte[1024];
+					int bytesRead = 0;
+					while ((bytesRead = source.Read(buffer, 0, buffer.Length)) > 0)
+					{
+						_serialPort.Write(buffer, 0, bytesRead);
+					}
+				}
 
 				AppendText("File sent: " + aFileChooser.Filename + Environment.NewLine);
 
