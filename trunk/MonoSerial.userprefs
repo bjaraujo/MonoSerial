@@ -5,12 +5,12 @@
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument="MonoSerial\MonoSerial.ini">
+  <MonoDevelop.Ide.Workbench>
     <Files>
       <File FileName="MonoSerial\Program.cs" Line="1" Column="1" />
-      <File FileName="MonoSerial\MainWindow.cs" Line="33" Column="33" />
+      <File FileName="MonoSerial\MainWindow.cs" Line="128" Column="39" />
       <File FileName="MonoSerial\gtk-gui\MainWindow.cs" Line="1" Column="1" />
-      <File FileName="MonoSerial\MonoSerial.ini" Line="3" Column="13" />
+      <File FileName="MonoSerial\MonoSerial.ini" Line="8" Column="19" />
     </Files>
   </MonoDevelop.Ide.Workbench>
 </Properties>

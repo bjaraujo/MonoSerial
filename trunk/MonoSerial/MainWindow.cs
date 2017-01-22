@@ -15,18 +15,19 @@ public partial class MainWindow : Gtk.Window
 	SerialPort _serialPort;
 	bool _exitApp = false;
 	string _iniFileName = "MonoSerial.ini";
+	Gdk.Color _bgColor = new Gdk.Color(0, 0, 0);
+	Gdk.Color _textColor = new Gdk.Color(0, 255, 0);
+	Pango.FontDescription _font = Pango.FontDescription.FromString("Courier 12");
 	Thread _t = null;
-
+		
 	public MainWindow() : base(Gtk.WindowType.Toplevel)
 	{
 
 		Build();
 
-		this.txtSerialData.ModifyFont(Pango.FontDescription.FromString("Courier 12"));
-		this.txtSerialData.ModifyFont(Pango.FontDescription.FromString("Courier 12"));
-
-		this.txtSerialData.ModifyBase(StateType.Normal, new Gdk.Color(0x00, 0x00, 0x00));
-		this.txtSerialData.ModifyText(StateType.Normal, new Gdk.Color(0xff, 0xff, 0xff));
+		this.txtSerialData.ModifyFont(_font);
+		this.txtSerialData.ModifyBase(StateType.Normal, _bgColor);
+		this.txtSerialData.ModifyText(StateType.Normal, _textColor);
 
 		//Debug.WriteLine(System.Environment.OSVersion);
 
@@ -116,16 +117,33 @@ public partial class MainWindow : Gtk.Window
 
 			IniData data = aParser.ReadFile(_iniFileName);
 
+			// SerialPort
 			this.txtPort.Text = data["SerialPort"]["Name"];
 			this.txtBaudRate.Text = data["SerialPort"]["Speed"];
 			this.cmbParity.Active = Int32.Parse(data["SerialPort"]["Parity"]);
 			this.cmbStopBits.Active = Int32.Parse(data["SerialPort"]["Stopbit"]);
 
-			string[] rgbBackgroundColor = data["View"]["BackgroundColor"].Split(',');
-			string[] rgbTextColor = data["View"]["TextColor"].Split(',');
-			            
-			this.txtSerialData.ModifyBase(StateType.Normal, new Gdk.Color(Byte.Parse(rgbBackgroundColor[0]), Byte.Parse(rgbBackgroundColor[1]), Byte.Parse(rgbBackgroundColor[2])));
-			this.txtSerialData.ModifyText(StateType.Normal, new Gdk.Color(Byte.Parse(rgbTextColor[0]), Byte.Parse(rgbTextColor[1]), Byte.Parse(rgbTextColor[2])));
+			// View
+			string fontName = data["View"]["FontName"];
+			string fontSize = data["View"]["FontSize"];
+
+			_font = Pango.FontDescription.FromString(fontName + " " + fontSize);
+			this.txtSerialData.ModifyFont(_font);
+
+			string[] bgColor = data["View"]["BackgroundColor"].Split(',');
+			string[] textColor = data["View"]["TextColor"].Split(',');
+
+			if (bgColor.Length > 2)
+			{
+				_bgColor = new Gdk.Color(Byte.Parse(bgColor[0]), Byte.Parse(bgColor[1]), Byte.Parse(bgColor[2]));
+				this.txtSerialData.ModifyBase(StateType.Normal, _bgColor);
+			}
+
+			if (textColor.Length > 2)
+			{
+				_textColor = new Gdk.Color(Byte.Parse(textColor[0]), Byte.Parse(textColor[1]), Byte.Parse(textColor[2]));
+				this.txtSerialData.ModifyText(StateType.Normal, _textColor);
+			}
 
 		}
 		catch (Exception e)
@@ -145,10 +163,17 @@ public partial class MainWindow : Gtk.Window
 
 			IniData data = aParser.ReadFile(_iniFileName);
 
+			// SerialPort
 			data["SerialPort"]["Name"] = this.txtPort.Text;
 			data["SerialPort"]["Speed"] = this.txtBaudRate.Text;
 			data["SerialPort"]["Parity"] = this.cmbParity.Active.ToString();
 			data["SerialPort"]["Stopbit"] = this.cmbStopBits.Active.ToString();
+
+			// View
+			data["View"]["FontName"] = _font.Family;
+			data["View"]["FontSize"] = (_font.Size / 1024).ToString();
+			data["View"]["BackgroundColor"] = (_bgColor.Red / 65535 * 255).ToString() + "," + (_bgColor.Green / 65535 * 255).ToString() + "," + (_bgColor.Blue / 65535 * 255).ToString();
+			data["View"]["TextColor"] = (_textColor.Red / 65535 * 255).ToString() + "," + (_textColor.Green / 65535 * 255).ToString() + "," + (_textColor.Blue / 65535 * 255).ToString();
 
 			aParser.WriteFile(_iniFileName, data);
 
