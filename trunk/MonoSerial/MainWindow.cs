@@ -364,4 +364,12 @@ public partial class MainWindow : Gtk.Window
 		aFileChooser.Destroy();
 
 	}
+
+	protected void OnClearActionActivated(object sender, EventArgs e)
+	{
+
+		this.txtSerialData.Buffer.Clear();
+		             
+	}
+
 }

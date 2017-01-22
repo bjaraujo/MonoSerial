@@ -27,9 +27,20 @@
         <property name="ShortLabel" translatable="yes">Exit</property>
         <signal name="Activated" handler="OnExitActionActivated" />
       </action>
+      <action id="EditAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Edit</property>
+        <property name="ShortLabel" translatable="yes">Edit</property>
+      </action>
+      <action id="ClearAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Clear</property>
+        <property name="ShortLabel" translatable="yes">Clear</property>
+        <signal name="Activated" handler="OnClearActionActivated" after="yes" />
+      </action>
     </action-group>
     <property name="MemberName" />
-    <property name="Title" translatable="yes">MainWindow</property>
+    <property name="Title" translatable="yes">Mono Serial Port Terminal</property>
     <property name="WindowPosition">CenterOnParent</property>
     <signal name="DeleteEvent" handler="OnDeleteEvent" />
     <child>
@@ -43,6 +54,9 @@
               <node type="Menu" action="FileAction">
                 <node type="Menuitem" action="SendFileAction" />
                 <node type="Menuitem" action="ExitAction" />
+              </node>
+              <node type="Menu" action="EditAction">
+                <node type="Menuitem" action="ClearAction" />
               </node>
             </node>
           </widget>

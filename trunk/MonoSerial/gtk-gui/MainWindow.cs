@@ -11,6 +11,10 @@ public partial class MainWindow
 
 	private global::Gtk.Action ExitAction;
 
+	private global::Gtk.Action EditAction;
+
+	private global::Gtk.Action ClearAction;
+
 	private global::Gtk.VBox vboxMain;
 
 	private global::Gtk.MenuBar mnuMain;
@@ -56,19 +60,23 @@ public partial class MainWindow
 		this.ExitAction = new global::Gtk.Action("ExitAction", global::Mono.Unix.Catalog.GetString("Exit"), null, null);
 		this.ExitAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Exit");
 		w1.Add(this.ExitAction, null);
+		this.EditAction = new global::Gtk.Action("EditAction", global::Mono.Unix.Catalog.GetString("Edit"), null, null);
+		this.EditAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Edit");
+		w1.Add(this.EditAction, null);
+		this.ClearAction = new global::Gtk.Action("ClearAction", global::Mono.Unix.Catalog.GetString("Clear"), null, null);
+		this.ClearAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Clear");
+		w1.Add(this.ClearAction, null);
 		this.UIManager.InsertActionGroup(w1, 0);
 		this.AddAccelGroup(this.UIManager.AccelGroup);
 		this.Name = "MainWindow";
-		this.Title = global::Mono.Unix.Catalog.GetString("MainWindow");
+		this.Title = global::Mono.Unix.Catalog.GetString("Mono Serial Port Terminal");
 		this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 		// Container child MainWindow.Gtk.Container+ContainerChild
 		this.vboxMain = new global::Gtk.VBox();
 		this.vboxMain.Name = "vboxMain";
 		this.vboxMain.Spacing = 6;
 		// Container child vboxMain.Gtk.Box+BoxChild
-		this.UIManager.AddUiFromString("<ui><menubar name=\'mnuMain\'><menu name=\'FileAction\' action=\'FileAction\'><menuitem" +
-				" name=\'SendFileAction\' action=\'SendFileAction\'/><menuitem name=\'ExitAction\' acti" +
-				"on=\'ExitAction\'/></menu></menubar></ui>");
+		this.UIManager.AddUiFromString(@"<ui><menubar name='mnuMain'><menu name='FileAction' action='FileAction'><menuitem name='SendFileAction' action='SendFileAction'/><menuitem name='ExitAction' action='ExitAction'/></menu><menu name='EditAction' action='EditAction'><menuitem name='ClearAction' action='ClearAction'/></menu></menubar></ui>");
 		this.mnuMain = ((global::Gtk.MenuBar)(this.UIManager.GetWidget("/mnuMain")));
 		this.mnuMain.Name = "mnuMain";
 		this.vboxMain.Add(this.mnuMain);
@@ -200,6 +208,7 @@ public partial class MainWindow
 		this.DeleteEvent += new global::Gtk.DeleteEventHandler(this.OnDeleteEvent);
 		this.SendFileAction.Activated += new global::System.EventHandler(this.OnSendFileActionActivated);
 		this.ExitAction.Activated += new global::System.EventHandler(this.OnExitActionActivated);
+		this.ClearAction.Activated += new global::System.EventHandler(this.OnClearActionActivated);
 		this.cmdConnect.Clicked += new global::System.EventHandler(this.OnCmdConnectClicked);
 		this.txtCommand.KeyReleaseEvent += new global::Gtk.KeyReleaseEventHandler(this.OnTxtCommandKeyReleaseEvent);
 	}
