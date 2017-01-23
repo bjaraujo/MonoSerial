@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Ports;
 using System.Threading;
 using System.Diagnostics;
+using System.Text;
 using Gtk;
 using IniParser;
 using IniParser.Model;
@@ -74,7 +75,7 @@ public partial class MainWindow : Gtk.Window
 					{
 
 						// Clear buffer
-						if (this.txtSerialData.Buffer.LineCount > 1000)
+						if (this.txtSerialData.Buffer.LineCount > 10000)
 							this.txtSerialData.Buffer.Clear();
 
 						AppendText(aText);
@@ -279,8 +280,10 @@ public partial class MainWindow : Gtk.Window
 				_serialPort.Parity = GetParity(this.cmbParity.ActiveText);
 				_serialPort.StopBits = GetStopBits(this.cmbStopBits.ActiveText);
 				_serialPort.ReadTimeout = 200;
+				_serialPort.Encoding = Encoding.UTF8;
 
 				_serialPort.Open();
+
 				this.cmdConnect.Label = "Close";
 
 				AppendText("<Connected to port: " + txtPort.Text + ">" + Environment.NewLine);
