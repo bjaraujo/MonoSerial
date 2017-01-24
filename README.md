@@ -2,4 +2,6 @@
 
 Cross platform serial port terminal developed with Mono/GTK.
 
-https://raw.githubusercontent.com/bjaraujo/MonoSerial/master/trunk/ScreenShots/ss01.png
+![Main Screen](https://raw.githubusercontent.com/bjaraujo/MonoSerial/master/trunk/ScreenShots/ss01.png) 
+
+
