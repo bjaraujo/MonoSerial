@@ -11,13 +11,15 @@ using IniParser.Model;
 public partial class MainWindow : Gtk.Window
 {
 
+	MonoSerial.SettingsDialog _settings;
+
 	SerialPort _serialPort;
 	bool _exitApp = false;
 	string _iniFileName = "MonoSerial.ini";
 	Gdk.Color _bgColor = new Gdk.Color(0, 0, 0);
 	Gdk.Color _textColor = new Gdk.Color(0, 255, 0);
 	Pango.FontDescription _font = Pango.FontDescription.FromString("Courier 12");
-	Thread _t = null;
+	Thread _t1 = null;
 		
 	public MainWindow() : base(Gtk.WindowType.Toplevel)
 	{
@@ -56,6 +58,9 @@ public partial class MainWindow : Gtk.Window
 
 		_serialPort = new SerialPort();
 
+		_settings = new MonoSerial.SettingsDialog();
+		_settings.Hide();
+
 	}
 
 	protected void ReadData()
@@ -78,7 +83,7 @@ public partial class MainWindow : Gtk.Window
 						if (this.txtSerialData.Buffer.LineCount > 10000)
 							this.txtSerialData.Buffer.Clear();
 
-						AppendText(aText);
+						OutputText(aText);
 
 					});
 				}
@@ -98,8 +103,15 @@ public partial class MainWindow : Gtk.Window
 
 	}
 
-	protected void AppendText(string aText)
+	protected void OutputText(string aText)
 	{
+
+		if (_settings.AppendOption == MonoSerial.SettingsDialog.Append.CR)
+			aText += "\r";
+		else if (_settings.AppendOption == MonoSerial.SettingsDialog.Append.LF)
+			aText += "\n";
+		if (_settings.AppendOption == MonoSerial.SettingsDialog.Append.CRLF)
+			aText += "\r\n";
 
 		this.txtSerialData.Buffer.Text += aText;
 		this.txtSerialData.ScrollToIter(txtSerialData.Buffer.EndIter, 0, false, 0, 0);
@@ -192,8 +204,8 @@ public partial class MainWindow : Gtk.Window
 		_serialPort.Close();
 		_exitApp = true;
 
-		if (_t != null)
-			_t.Join();
+		if (_t1 != null)
+			_t1.Join();
 
 		Application.Quit();
 
@@ -280,24 +292,25 @@ public partial class MainWindow : Gtk.Window
 				_serialPort.Parity = GetParity(this.cmbParity.ActiveText);
 				_serialPort.StopBits = GetStopBits(this.cmbStopBits.ActiveText);
 				_serialPort.ReadTimeout = 200;
+				_serialPort.WriteTimeout = 1000;
 				_serialPort.Encoding = Encoding.UTF8;
 
 				_serialPort.Open();
 
 				this.cmdConnect.Label = "Close";
 
-				AppendText("<Connected to port: " + txtPort.Text + ">" + Environment.NewLine);
+				OutputText("<Connected to port: " + txtPort.Text + ">" + Environment.NewLine);
 
 				this.txtCommand.IsFocus = true;
 
-				_t = new Thread(ReadData);
-				_t.Start();
+				_t1 = new Thread(ReadData);
+				_t1.Start();
 
 			}
 			catch (Exception)
 			{
 
-				AppendText("Error: Unable to open port: " + txtPort.Text + Environment.NewLine);
+				OutputText("Error: Unable to open port: " + txtPort.Text + Environment.NewLine);
 
 			}
 
@@ -310,15 +323,15 @@ public partial class MainWindow : Gtk.Window
 				_serialPort.Close();
 				this.cmdConnect.Label = "Open";
 
-				AppendText("<Connection closed.>" + Environment.NewLine);
+				OutputText("<Connection closed.>" + Environment.NewLine);
 
-				_t.Join();
+				_t1.Join();
 
 			}
 			catch (Exception)
 			{
 
-				AppendText("Error: closing connection." + Environment.NewLine);
+				OutputText("Error: closing connection." + Environment.NewLine);
 
 			}
 
@@ -358,13 +371,13 @@ public partial class MainWindow : Gtk.Window
 					}
 				}
 
-				AppendText("File sent: " + aFileChooser.Filename + Environment.NewLine);
+				OutputText("File sent: " + aFileChooser.Filename + Environment.NewLine);
 
 			}
 			catch (Exception)
 			{
 
-				AppendText("Error: Unable to write data to serial port." + Environment.NewLine);
+				OutputText("Error: Unable to write data to serial port." + Environment.NewLine);
 
 			}
 
@@ -381,4 +394,11 @@ public partial class MainWindow : Gtk.Window
 		             
 	}
 
+	protected void OnSettingsActionActivated(object sender, EventArgs e)
+	{
+
+		_settings.Modal = true;
+		_settings.Show();
+						
+	}
 }

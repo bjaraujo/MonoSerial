@@ -15,6 +15,8 @@ public partial class MainWindow
 
 	private global::Gtk.Action ClearAction;
 
+	private global::Gtk.Action SettingsAction;
+
 	private global::Gtk.VBox vboxMain;
 
 	private global::Gtk.MenuBar mnuMain;
@@ -66,6 +68,9 @@ public partial class MainWindow
 		this.ClearAction = new global::Gtk.Action("ClearAction", global::Mono.Unix.Catalog.GetString("Clear"), null, null);
 		this.ClearAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Clear");
 		w1.Add(this.ClearAction, null);
+		this.SettingsAction = new global::Gtk.Action("SettingsAction", global::Mono.Unix.Catalog.GetString("Settings..."), null, null);
+		this.SettingsAction.ShortLabel = global::Mono.Unix.Catalog.GetString("Settings...");
+		w1.Add(this.SettingsAction, null);
 		this.UIManager.InsertActionGroup(w1, 0);
 		this.AddAccelGroup(this.UIManager.AccelGroup);
 		this.Name = "MainWindow";
@@ -76,7 +81,7 @@ public partial class MainWindow
 		this.vboxMain.Name = "vboxMain";
 		this.vboxMain.Spacing = 6;
 		// Container child vboxMain.Gtk.Box+BoxChild
-		this.UIManager.AddUiFromString(@"<ui><menubar name='mnuMain'><menu name='FileAction' action='FileAction'><menuitem name='SendFileAction' action='SendFileAction'/><menuitem name='ExitAction' action='ExitAction'/></menu><menu name='EditAction' action='EditAction'><menuitem name='ClearAction' action='ClearAction'/></menu></menubar></ui>");
+		this.UIManager.AddUiFromString(@"<ui><menubar name='mnuMain'><menu name='FileAction' action='FileAction'><menuitem name='SendFileAction' action='SendFileAction'/><menuitem name='ExitAction' action='ExitAction'/></menu><menu name='EditAction' action='EditAction'><menuitem name='ClearAction' action='ClearAction'/><menuitem name='SettingsAction' action='SettingsAction'/></menu></menubar></ui>");
 		this.mnuMain = ((global::Gtk.MenuBar)(this.UIManager.GetWidget("/mnuMain")));
 		this.mnuMain.Name = "mnuMain";
 		this.vboxMain.Add(this.mnuMain);
@@ -209,6 +214,7 @@ public partial class MainWindow
 		this.SendFileAction.Activated += new global::System.EventHandler(this.OnSendFileActionActivated);
 		this.ExitAction.Activated += new global::System.EventHandler(this.OnExitActionActivated);
 		this.ClearAction.Activated += new global::System.EventHandler(this.OnClearActionActivated);
+		this.SettingsAction.Activated += new global::System.EventHandler(this.OnSettingsActionActivated);
 		this.cmdConnect.Clicked += new global::System.EventHandler(this.OnCmdConnectClicked);
 		this.txtCommand.KeyReleaseEvent += new global::Gtk.KeyReleaseEventHandler(this.OnTxtCommandKeyReleaseEvent);
 	}

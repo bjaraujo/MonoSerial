@@ -8,8 +8,12 @@
   <MonoDevelop.Ide.Workbench ActiveDocument="MonoSerial\MainWindow.cs">
     <Files>
       <File FileName="MonoSerial\Program.cs" Line="1" Column="1" />
-      <File FileName="MonoSerial\MainWindow.cs" Line="284" Column="5" />
+      <File FileName="MonoSerial\MainWindow.cs" Line="120" Column="2" />
       <File FileName="MonoSerial\gtk-gui\MainWindow.cs" Line="1" Column="1" />
+      <File FileName="MonoSerial\SettingsDialog.cs" Line="1" Column="1" />
+      <File FileName="MonoSerial\gtk-gui\gui.stetic" Line="329" Column="16" />
+      <File FileName="MonoSerial\gtk-gui\MonoSerial.SettingsDialog.cs" Line="1" Column="1" />
+      <File FileName="MonoSerial\MonoSerial.ini" Line="14" Column="11" />
     </Files>
   </MonoDevelop.Ide.Workbench>
 </Properties>
