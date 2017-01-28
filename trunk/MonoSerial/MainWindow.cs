@@ -361,11 +361,13 @@ public partial class MainWindow : Gtk.Window
 			try
 			{
 
-				using (FileStream source = new FileStream(aFileChooser.Filename, FileMode.Open))
+				const int bufferLength = 1024;
+				byte[] buffer = new byte[bufferLength];
+				int bytesRead = 0;
+
+				using (FileStream source = new FileStream(aFileChooser.Filename, FileMode.Open, FileAccess.Read))
 				{
-					byte[] buffer = new byte[1024];
-					int bytesRead = 0;
-					while ((bytesRead = source.Read(buffer, 0, buffer.Length)) > 0)
+					while ((bytesRead = source.Read(buffer, 0, bufferLength)) > 0)
 					{
 						_serialPort.Write(buffer, 0, bytesRead);
 					}

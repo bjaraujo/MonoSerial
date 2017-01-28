@@ -1,6 +1,6 @@
 ﻿<Properties StartupConfiguration="{8419BF44-4CFA-42C6-A6C1-334625267715}|Default">
   <MonoDevelop.Ide.ItemProperties.MonoSerial PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Release|x86" />
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
@@ -8,7 +8,7 @@
   <MonoDevelop.Ide.Workbench ActiveDocument="MonoSerial\MainWindow.cs">
     <Files>
       <File FileName="MonoSerial\Program.cs" Line="1" Column="1" />
-      <File FileName="MonoSerial\MainWindow.cs" Line="120" Column="2" />
+      <File FileName="MonoSerial\MainWindow.cs" Line="368" Column="5" />
       <File FileName="MonoSerial\gtk-gui\MainWindow.cs" Line="1" Column="1" />
       <File FileName="MonoSerial\SettingsDialog.cs" Line="1" Column="1" />
       <File FileName="MonoSerial\gtk-gui\gui.stetic" Line="329" Column="16" />
