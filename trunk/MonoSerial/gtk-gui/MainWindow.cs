@@ -45,8 +45,6 @@ public partial class MainWindow
 
 	private global::Gtk.TextView txtSerialData;
 
-	private global::Gtk.Entry txtCommand;
-
 	protected virtual void Build()
 	{
 		global::Stetic.Gui.Initialize(this);
@@ -191,17 +189,6 @@ public partial class MainWindow
 		this.vboxMain.Add(this.GtkScrolledWindow);
 		global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vboxMain[this.GtkScrolledWindow]));
 		w14.Position = 2;
-		// Container child vboxMain.Gtk.Box+BoxChild
-		this.txtCommand = new global::Gtk.Entry();
-		this.txtCommand.CanFocus = true;
-		this.txtCommand.Name = "txtCommand";
-		this.txtCommand.IsEditable = true;
-		this.txtCommand.InvisibleChar = '•';
-		this.vboxMain.Add(this.txtCommand);
-		global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vboxMain[this.txtCommand]));
-		w15.Position = 3;
-		w15.Expand = false;
-		w15.Fill = false;
 		this.Add(this.vboxMain);
 		if ((this.Child != null))
 		{
@@ -217,6 +204,5 @@ public partial class MainWindow
 		this.SettingsAction.Activated += new global::System.EventHandler(this.OnSettingsActionActivated);
 		this.cmdConnect.Clicked += new global::System.EventHandler(this.OnCmdConnectClicked);
 		this.txtSerialData.KeyReleaseEvent += new global::Gtk.KeyReleaseEventHandler(this.OnTxtSerialDataKeyReleaseEvent);
-		this.txtCommand.KeyReleaseEvent += new global::Gtk.KeyReleaseEventHandler(this.OnTxtCommandKeyReleaseEvent);
 	}
 }

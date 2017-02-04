@@ -222,21 +222,6 @@
             <property name="AutoSize">True</property>
           </packing>
         </child>
-        <child>
-          <widget class="Gtk.Entry" id="txtCommand">
-            <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="IsEditable">True</property>
-            <property name="InvisibleChar">•</property>
-            <signal name="KeyReleaseEvent" handler="OnTxtCommandKeyReleaseEvent" />
-          </widget>
-          <packing>
-            <property name="Position">3</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
       </widget>
     </child>
   </widget>

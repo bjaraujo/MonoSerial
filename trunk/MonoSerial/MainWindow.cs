@@ -220,31 +220,6 @@ public partial class MainWindow : Gtk.Window
 
 	}
 
-	protected void OnTxtCommandKeyReleaseEvent(object o, KeyReleaseEventArgs args)
-	{
-
-		try
-		{
-
-			if (args.Event.Key == Gdk.Key.Return)
-			{
-				_serialPort.WriteLine(this.txtCommand.Text);
-				this.txtCommand.Text = "";
-			}
-
-		}
-		catch (Exception)
-		{
-
-			this.txtSerialData.Buffer.Text += "Error: Unable to write data to serial port." + Environment.NewLine;
-			this.txtSerialData.ScrollToIter(this.txtSerialData.Buffer.EndIter, 0, false, 0, 0);
-
-		}
-
-		QueueDraw();
-
-	}
-
 	protected Parity GetParity(string text)
 	{
 
@@ -301,8 +276,6 @@ public partial class MainWindow : Gtk.Window
 				this.cmdConnect.Label = "Close";
 
 				OutputText("<Connected to port: " + txtPort.Text + ">" + Environment.NewLine);
-
-				this.txtCommand.IsFocus = true;
 
 				_t1 = new Thread(ReadData);
 				_t1.Start();
