@@ -6,7 +6,7 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <widget-library name="../bin/Debug/MonoSerial.exe" internal="true" />
+    <widget-library name="../bin/Release/MonoSerial.exe" internal="true" />
   </import>
   <widget class="Gtk.Window" id="MainWindow" design-size="1023 715">
     <action-group name="Default">
@@ -213,6 +213,8 @@
                 <property name="ShowScrollbars">True</property>
                 <property name="Editable">False</property>
                 <property name="Text" translatable="yes" />
+                <signal name="KeyPressEvent" handler="OnTxtSerialDataKeyPressEvent" />
+                <signal name="KeyReleaseEvent" handler="OnTxtSerialDataKeyReleaseEvent" />
               </widget>
             </child>
           </widget>
@@ -363,7 +365,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoSerial.Settings" design-size="400 300">
+  <widget class="Gtk.Dialog" id="MonoSerial.SettingsDialog" design-size="400 300">
     <property name="MemberName" />
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>

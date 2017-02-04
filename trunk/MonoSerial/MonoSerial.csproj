@@ -64,7 +64,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SettingsDialog.cs" />
     <Compile Include="gtk-gui\MonoSerial.SettingsDialog.cs" />
-    <Compile Include="gtk-gui\MonoSerial.Settings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

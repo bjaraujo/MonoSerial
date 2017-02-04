@@ -20,6 +20,7 @@ public partial class MainWindow : Gtk.Window
 	Gdk.Color _textColor = new Gdk.Color(0, 255, 0);
 	Pango.FontDescription _font = Pango.FontDescription.FromString("Courier 12");
 	Thread _t1 = null;
+	char[] _outBuffer = new char[1];
 		
 	public MainWindow() : base(Gtk.WindowType.Toplevel)
 	{
@@ -402,5 +403,42 @@ public partial class MainWindow : Gtk.Window
 		_settings.Modal = true;
 		_settings.Show();
 						
+	}
+
+	protected void OnTxtSerialDataKeyPressEvent(object o, KeyPressEventArgs args)
+	{
+		
+	
+	}
+
+	protected void OnTxtSerialDataKeyReleaseEvent(object o, KeyReleaseEventArgs args)
+	{
+
+		try
+		{
+
+			if (args.Event.Key == Gdk.Key.Return)
+			{
+				_outBuffer[0] = '\r';
+				_serialPort.Write(_outBuffer, 0, 1);
+			}
+			else
+			{
+				_outBuffer[0] = (char)args.Event.KeyValue;
+				_serialPort.Write(_outBuffer, 0, 1);
+				this.txtSerialData.Buffer.Text.TrimEnd(_outBuffer[0]);
+			}
+
+		}
+		catch (Exception)
+		{
+
+			this.txtSerialData.Buffer.Text += "Error: Unable to write data to serial port." + Environment.NewLine;
+			this.txtSerialData.ScrollToIter(this.txtSerialData.Buffer.EndIter, 0, false, 0, 0);
+
+		}
+
+		QueueDraw();
+
 	}
 }
