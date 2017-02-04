@@ -21,7 +21,8 @@ public partial class MainWindow : Gtk.Window
 	Pango.FontDescription _font = Pango.FontDescription.FromString("Courier 12");
 	Thread _t1 = null;
 	char[] _outBuffer = new char[1];
-		
+	int _windowLeft, _windowTop, _windowWidth, _windowHeight;
+
 	public MainWindow() : base(Gtk.WindowType.Toplevel)
 	{
 
@@ -55,12 +56,14 @@ public partial class MainWindow : Gtk.Window
 
 		this.txtSerialData.IsFocus = true;
 
-		LoadSettings();
-
 		_serialPort = new SerialPort();
 
 		_settings = new MonoSerial.SettingsDialog();
 		_settings.Hide();
+
+		this.Show();
+
+		LoadSettings();
 
 	}
 
@@ -136,6 +139,18 @@ public partial class MainWindow : Gtk.Window
 			this.cmbStopBits.Active = Int32.Parse(data["SerialPort"]["Stopbit"]);
 
 			// View
+			_windowLeft = Int32.Parse(data["View"]["Left"]);
+			_windowTop = Int32.Parse(data["View"]["Top"]);
+			_windowWidth = Int32.Parse(data["View"]["Width"]);
+			_windowHeight = Int32.Parse(data["View"]["Height"]);
+
+			/*
+			int cx, cy;
+			this.GetPosition(out cx, out cy);
+			this.Move(_windowLeft - cx, _windowTop - cy);
+			this.SetDefaultSize(_windowWidth, _windowHeight);
+			*/
+
 			string fontName = data["View"]["FontName"];
 			string fontSize = data["View"]["FontSize"];
 
@@ -182,6 +197,16 @@ public partial class MainWindow : Gtk.Window
 			data["SerialPort"]["Stopbit"] = this.cmbStopBits.Active.ToString();
 
 			// View
+			int width, height;
+			this.GdkWindow.GetSize(out width, out height);
+
+			int left, top;
+			this.GdkWindow.GetPosition(out left, out top);
+
+			data["View"]["Left"] = left.ToString();
+			data["View"]["Top"] = top.ToString();
+			data["View"]["Width"] = width.ToString();
+			data["View"]["Height"] = height.ToString();
 			data["View"]["FontName"] = _font.Family;
 			data["View"]["FontSize"] = (_font.Size / 1024).ToString();
 			data["View"]["BackgroundColor"] = (_bgColor.Red / 65535 * 255).ToString() + "," + (_bgColor.Green / 65535 * 255).ToString() + "," + (_bgColor.Blue / 65535 * 255).ToString();
@@ -415,4 +440,5 @@ public partial class MainWindow : Gtk.Window
 		QueueDraw();
 
 	}
+
 }
