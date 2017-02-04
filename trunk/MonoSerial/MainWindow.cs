@@ -416,11 +416,18 @@ public partial class MainWindow : Gtk.Window
 				_outBuffer[0] = '\r';
 				_serialPort.Write(_outBuffer, 0, 1);
 			}
+			else if (args.Event.Key == Gdk.Key.Shift_R ||
+			    args.Event.Key == Gdk.Key.Shift_L || 
+			    args.Event.Key == Gdk.Key.Control_R ||
+				args.Event.Key == Gdk.Key.Control_L
+			   )
+			{
+				// Do nothing
+			}
 			else
 			{
 				_outBuffer[0] = (char)args.Event.KeyValue;
 				_serialPort.Write(_outBuffer, 0, 1);
-				this.txtSerialData.Buffer.Text.TrimEnd(_outBuffer[0]);
 			}
 
 		}
