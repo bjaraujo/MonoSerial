@@ -405,12 +405,6 @@ public partial class MainWindow : Gtk.Window
 						
 	}
 
-	protected void OnTxtSerialDataKeyPressEvent(object o, KeyPressEventArgs args)
-	{
-		
-	
-	}
-
 	protected void OnTxtSerialDataKeyReleaseEvent(object o, KeyReleaseEventArgs args)
 	{
 
