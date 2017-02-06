@@ -204,5 +204,6 @@ public partial class MainWindow
 		this.SettingsAction.Activated += new global::System.EventHandler(this.OnSettingsActionActivated);
 		this.cmdConnect.Clicked += new global::System.EventHandler(this.OnCmdConnectClicked);
 		this.txtSerialData.KeyReleaseEvent += new global::Gtk.KeyReleaseEventHandler(this.OnTxtSerialDataKeyReleaseEvent);
+		this.txtSerialData.Focused += new global::Gtk.FocusedHandler(this.OnTxtSerialDataFocused);
 	}
 }

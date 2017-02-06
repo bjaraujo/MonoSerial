@@ -4,6 +4,7 @@ using System.IO.Ports;
 using System.Threading;
 using System.Diagnostics;
 using System.Text;
+using System.Timers;
 using Gtk;
 using IniParser;
 using IniParser.Model;
@@ -11,434 +12,478 @@ using IniParser.Model;
 public partial class MainWindow : Gtk.Window
 {
 
-	MonoSerial.SettingsDialog _settings;
+    MonoSerial.SettingsDialog _settings;
 
-	SerialPort _serialPort;
-	bool _exitApp = false;
-	string _iniFileName = "MonoSerial.ini";
-	Gdk.Color _bgColor = new Gdk.Color(0, 0, 0);
-	Gdk.Color _textColor = new Gdk.Color(0, 255, 0);
-	Pango.FontDescription _font = Pango.FontDescription.FromString("Courier 12");
-	Thread _t1 = null;
-	char[] _outBuffer = new char[1];
-	int _windowLeft, _windowTop, _windowWidth, _windowHeight;
+    SerialPort _serialPort;
+    bool _exitApp = false;
+    string _iniFileName = "MonoSerial.ini";
+    Gdk.Color _bgColor = new Gdk.Color(0, 0, 0);
+    Gdk.Color _textColor = new Gdk.Color(0, 255, 0);
+    Pango.FontDescription _font = Pango.FontDescription.FromString("Courier 12");
+    Thread _t1 = null;
+    char[] _outBuffer = new char[1];
+    int _windowLeft, _windowTop, _windowWidth, _windowHeight;
+    System.Timers.Timer _scrollTimer;
 
-	public MainWindow() : base(Gtk.WindowType.Toplevel)
-	{
+    public MainWindow() : base(Gtk.WindowType.Toplevel)
+    {
 
-		Build();
+        Build();
 
-		this.txtSerialData.ModifyFont(_font);
-		this.txtSerialData.ModifyBase(StateType.Normal, _bgColor);
-		this.txtSerialData.ModifyText(StateType.Normal, _textColor);
+        this.txtSerialData.ModifyFont(_font);
+        this.txtSerialData.ModifyBase(StateType.Normal, _bgColor);
+        this.txtSerialData.ModifyText(StateType.Normal, _textColor);
 
-		//Debug.WriteLine(System.Environment.OSVersion);
+        //Debug.WriteLine(System.Environment.OSVersion);
 
-		if (System.Environment.OSVersion.Platform == PlatformID.Unix)
-			this.txtPort.Text = "/dev/ttyS0";
-		else
-			this.txtPort.Text = "COM1";
+        if (System.Environment.OSVersion.Platform == PlatformID.Unix)
+            this.txtPort.Text = "/dev/ttyS0";
+        else
+            this.txtPort.Text = "COM1";
 
-		this.txtBaudRate.Text = "9600";
+        this.txtBaudRate.Text = "9600";
 
-		this.cmbParity.AppendText("None");
-		this.cmbParity.AppendText("Odd");
-		this.cmbParity.AppendText("Even");
-		this.cmbParity.AppendText("Mark");
-		this.cmbParity.AppendText("Space");
-		this.cmbParity.Active = 0;
+        this.cmbParity.AppendText("None");
+        this.cmbParity.AppendText("Odd");
+        this.cmbParity.AppendText("Even");
+        this.cmbParity.AppendText("Mark");
+        this.cmbParity.AppendText("Space");
+        this.cmbParity.Active = 0;
 
-		this.cmbStopBits.AppendText("None");
-		this.cmbStopBits.AppendText("One");
-		this.cmbStopBits.AppendText("Two");
-		this.cmbStopBits.AppendText("OnePointFive");
-		this.cmbStopBits.Active = 1;
+        this.cmbStopBits.AppendText("None");
+        this.cmbStopBits.AppendText("One");
+        this.cmbStopBits.AppendText("Two");
+        this.cmbStopBits.AppendText("OnePointFive");
+        this.cmbStopBits.Active = 1;
 
-		this.txtSerialData.IsFocus = true;
+        _serialPort = new SerialPort();
 
-		_serialPort = new SerialPort();
+        _settings = new MonoSerial.SettingsDialog();
+        _settings.Hide();
 
-		_settings = new MonoSerial.SettingsDialog();
-		_settings.Hide();
+        _scrollTimer = new System.Timers.Timer(500);
 
-		this.Show();
+        _scrollTimer.Elapsed += new ElapsedEventHandler(OnTimeEvent);
 
-		LoadSettings();
+        _scrollTimer.AutoReset = true;
 
-	}
+        _scrollTimer.Start();
 
-	protected void ReadData()
-	{
+        this.Show();
 
-		while (_serialPort.IsOpen)
-		{
+        LoadSettings();
 
-			try
-			{
+        this.txtSerialData.IsFocus = true;
 
-				string aText = _serialPort.ReadExisting();
+    }
 
-				if (aText.Length > 0)
-				{
-					Gtk.Application.Invoke(delegate
-					{
+    private void OnTimeEvent(object source, ElapsedEventArgs e)
+    {
 
-						// Clear buffer
-						if (this.txtSerialData.Buffer.LineCount > 10000)
-							this.txtSerialData.Buffer.Clear();
+        Gtk.Application.Invoke(delegate
+        {
 
-						OutputText(aText);
+            this.txtSerialData.ScrollToIter(txtSerialData.Buffer.EndIter, 0, false, 0, 0);
+            this.txtSerialData.Buffer.PlaceCursor(this.txtSerialData.Buffer.EndIter);
 
-					});
-				}
+        });
 
-			}
-			catch (Exception e)
-			{
-				Debug.WriteLine("Exception: " + e.Message);
-			}
+    }
 
-			Thread.Sleep(20);
+    protected void ReadData()
+    {
 
-			if (_exitApp)
-				break;
+        while (_serialPort.IsOpen)
+        {
 
-		};
+            try
+            {
 
-	}
+                string aText = _serialPort.ReadExisting();
 
-	protected void OutputText(string aText)
-	{
+                if (aText.Length > 0)
+                {
+                    Gtk.Application.Invoke(delegate
+                    {
 
-		if (_settings.AppendOption == MonoSerial.SettingsDialog.Append.CR)
-			aText += "\r";
-		else if (_settings.AppendOption == MonoSerial.SettingsDialog.Append.LF)
-			aText += "\n";
-		if (_settings.AppendOption == MonoSerial.SettingsDialog.Append.CRLF)
-			aText += "\r\n";
+                        // Clear buffer
+                        if (this.txtSerialData.Buffer.LineCount > 10000)
+                            this.txtSerialData.Buffer.Clear();
 
-		this.txtSerialData.Buffer.Text += aText;
-		this.txtSerialData.ScrollToIter(txtSerialData.Buffer.EndIter, 0, false, 0, 0);
+                        OutputText(aText);
 
-	}
+                    });
+                }
 
-	protected void LoadSettings()
-	{
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("Exception: " + e.Message);
+            }
 
-		try
-		{
+            Thread.Sleep(20);
 
-			var aParser = new FileIniDataParser();
+            if (_exitApp)
+                break;
 
-			IniData data = aParser.ReadFile(_iniFileName);
+        };
 
-			// SerialPort
-			this.txtPort.Text = data["SerialPort"]["Name"];
-			this.txtBaudRate.Text = data["SerialPort"]["Speed"];
-			this.cmbParity.Active = Int32.Parse(data["SerialPort"]["Parity"]);
-			this.cmbStopBits.Active = Int32.Parse(data["SerialPort"]["Stopbit"]);
+    }
 
-			// View
-			_windowLeft = Int32.Parse(data["View"]["Left"]);
-			_windowTop = Int32.Parse(data["View"]["Top"]);
-			_windowWidth = Int32.Parse(data["View"]["Width"]);
-			_windowHeight = Int32.Parse(data["View"]["Height"]);
+    protected void OutputText(string aText)
+    {
 
-			/*
+        if (_settings.AppendOption == MonoSerial.SettingsDialog.Append.CR)
+            aText += "\r";
+        else if (_settings.AppendOption == MonoSerial.SettingsDialog.Append.LF)
+            aText += "\n";
+        if (_settings.AppendOption == MonoSerial.SettingsDialog.Append.CRLF)
+            aText += "\r\n";
+
+		//this.txtSerialData.Buffer.Text += aText;
+		//this.txtSerialData.Buffer.Insert(this.txtSerialData.Buffer.EndIter, aText);
+
+		TextIter end = this.txtSerialData.Buffer.EndIter;
+		this.txtSerialData.Buffer.Insert(ref end, aText);
+
+    }
+
+    protected void LoadSettings()
+    {
+
+        try
+        {
+
+            var aParser = new FileIniDataParser();
+
+            IniData data = aParser.ReadFile(_iniFileName);
+
+            // SerialPort
+            this.txtPort.Text = data["SerialPort"]["Name"];
+            this.txtBaudRate.Text = data["SerialPort"]["Speed"];
+            this.cmbParity.Active = Int32.Parse(data["SerialPort"]["Parity"]);
+            this.cmbStopBits.Active = Int32.Parse(data["SerialPort"]["Stopbit"]);
+
+            // View
+            _windowLeft = Int32.Parse(data["View"]["Left"]);
+            _windowTop = Int32.Parse(data["View"]["Top"]);
+            _windowWidth = Int32.Parse(data["View"]["Width"]);
+            _windowHeight = Int32.Parse(data["View"]["Height"]);
+
+            /*
 			int cx, cy;
 			this.GetPosition(out cx, out cy);
 			this.Move(_windowLeft - cx, _windowTop - cy);
 			this.SetDefaultSize(_windowWidth, _windowHeight);
 			*/
 
-			string fontName = data["View"]["FontName"];
-			string fontSize = data["View"]["FontSize"];
+            string fontName = data["View"]["FontName"];
+            string fontSize = data["View"]["FontSize"];
 
-			_font = Pango.FontDescription.FromString(fontName + " " + fontSize);
-			this.txtSerialData.ModifyFont(_font);
+            _font = Pango.FontDescription.FromString(fontName + " " + fontSize);
+            this.txtSerialData.ModifyFont(_font);
 
-			string[] bgColor = data["View"]["BackgroundColor"].Split(',');
-			string[] textColor = data["View"]["TextColor"].Split(',');
+            string[] bgColor = data["View"]["BackgroundColor"].Split(',');
+            string[] textColor = data["View"]["TextColor"].Split(',');
 
-			if (bgColor.Length > 2)
-			{
-				_bgColor = new Gdk.Color(Byte.Parse(bgColor[0]), Byte.Parse(bgColor[1]), Byte.Parse(bgColor[2]));
-				this.txtSerialData.ModifyBase(StateType.Normal, _bgColor);
-			}
+            if (bgColor.Length > 2)
+            {
+                _bgColor = new Gdk.Color(Byte.Parse(bgColor[0]), Byte.Parse(bgColor[1]), Byte.Parse(bgColor[2]));
+                this.txtSerialData.ModifyBase(StateType.Normal, _bgColor);
+            }
 
-			if (textColor.Length > 2)
-			{
-				_textColor = new Gdk.Color(Byte.Parse(textColor[0]), Byte.Parse(textColor[1]), Byte.Parse(textColor[2]));
-				this.txtSerialData.ModifyText(StateType.Normal, _textColor);
-			}
+            if (textColor.Length > 2)
+            {
+                _textColor = new Gdk.Color(Byte.Parse(textColor[0]), Byte.Parse(textColor[1]), Byte.Parse(textColor[2]));
+                this.txtSerialData.ModifyText(StateType.Normal, _textColor);
+            }
 
-		}
-		catch (Exception e)
-		{
-			Debug.WriteLine("Exception: " + e.Message);
-		}
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine("Exception: " + e.Message);
+        }
 
-	}
+    }
 
-	protected void SaveSettings()
-	{
+    protected void SaveSettings()
+    {
 
-		try
-		{
+        try
+        {
 
-			var aParser = new FileIniDataParser();
+            var aParser = new FileIniDataParser();
 
-			IniData data = aParser.ReadFile(_iniFileName);
+            IniData data = aParser.ReadFile(_iniFileName);
 
-			// SerialPort
-			data["SerialPort"]["Name"] = this.txtPort.Text;
-			data["SerialPort"]["Speed"] = this.txtBaudRate.Text;
-			data["SerialPort"]["Parity"] = this.cmbParity.Active.ToString();
-			data["SerialPort"]["Stopbit"] = this.cmbStopBits.Active.ToString();
+            // SerialPort
+            data["SerialPort"]["Name"] = this.txtPort.Text;
+            data["SerialPort"]["Speed"] = this.txtBaudRate.Text;
+            data["SerialPort"]["Parity"] = this.cmbParity.Active.ToString();
+            data["SerialPort"]["Stopbit"] = this.cmbStopBits.Active.ToString();
 
-			// View
-			int width, height;
-			this.GdkWindow.GetSize(out width, out height);
+            // View
+            int width, height;
+            this.GdkWindow.GetSize(out width, out height);
 
-			int left, top;
-			this.GdkWindow.GetPosition(out left, out top);
+            int left, top;
+            this.GdkWindow.GetPosition(out left, out top);
 
-			data["View"]["Left"] = left.ToString();
-			data["View"]["Top"] = top.ToString();
-			data["View"]["Width"] = width.ToString();
-			data["View"]["Height"] = height.ToString();
-			data["View"]["FontName"] = _font.Family;
-			data["View"]["FontSize"] = (_font.Size / 1024).ToString();
-			data["View"]["BackgroundColor"] = (_bgColor.Red / 65535 * 255).ToString() + "," + (_bgColor.Green / 65535 * 255).ToString() + "," + (_bgColor.Blue / 65535 * 255).ToString();
-			data["View"]["TextColor"] = (_textColor.Red / 65535 * 255).ToString() + "," + (_textColor.Green / 65535 * 255).ToString() + "," + (_textColor.Blue / 65535 * 255).ToString();
+            data["View"]["Left"] = left.ToString();
+            data["View"]["Top"] = top.ToString();
+            data["View"]["Width"] = width.ToString();
+            data["View"]["Height"] = height.ToString();
+            data["View"]["FontName"] = _font.Family;
+            data["View"]["FontSize"] = (_font.Size / 1024).ToString();
+            data["View"]["BackgroundColor"] = (_bgColor.Red / 65535 * 255).ToString() + "," + (_bgColor.Green / 65535 * 255).ToString() + "," + (_bgColor.Blue / 65535 * 255).ToString();
+            data["View"]["TextColor"] = (_textColor.Red / 65535 * 255).ToString() + "," + (_textColor.Green / 65535 * 255).ToString() + "," + (_textColor.Blue / 65535 * 255).ToString();
 
-			aParser.WriteFile(_iniFileName, data);
+            aParser.WriteFile(_iniFileName, data);
 
-		}
-		catch (Exception e)
-		{
-			Debug.WriteLine("Exception: " + e.Message);
-		}
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine("Exception: " + e.Message);
+        }
 
-	}
+    }
 
-	protected void ExitApplication()
-	{
+    protected void ExitApplication()
+    {
 
-		SaveSettings();
+        SaveSettings();
 
-		_serialPort.Close();
-		_exitApp = true;
+        _serialPort.Close();
+        _exitApp = true;
 
-		if (_t1 != null)
-			_t1.Join();
+        if (_t1 != null)
+            _t1.Join();
 
-		Application.Quit();
+        Application.Quit();
 
-	}
+    }
 
-	protected void OnDeleteEvent(object sender, DeleteEventArgs a)
-	{
+    protected void OnDeleteEvent(object sender, DeleteEventArgs a)
+    {
 
-		ExitApplication();
-		a.RetVal = true;
+        ExitApplication();
+        a.RetVal = true;
 
-	}
+    }
 
-	protected Parity GetParity(string text)
-	{
+    protected Parity GetParity(string text)
+    {
 
-		if (text == "None")
-			return Parity.None;
-		else if (text == "Odd")
-			return Parity.Odd;
-		else if (text == "Even")
-			return Parity.Even;
-		else if (text == "Mark")
-			return Parity.Mark;
-		else if (text == "Space")
-			return Parity.Space;
+        if (text == "None")
+            return Parity.None;
+        else if (text == "Odd")
+            return Parity.Odd;
+        else if (text == "Even")
+            return Parity.Even;
+        else if (text == "Mark")
+            return Parity.Mark;
+        else if (text == "Space")
+            return Parity.Space;
 
-		return Parity.None;
+        return Parity.None;
 
-	}
+    }
 
-	protected StopBits GetStopBits(string text)
-	{
+    protected StopBits GetStopBits(string text)
+    {
 
-		if (text == "None")
-			return StopBits.None;
-		else if (text == "One")
-			return StopBits.One;
-		else if (text == "Two")
-			return StopBits.Two;
-		else if (text == "OnePointFive")
-			return StopBits.OnePointFive;
+        if (text == "None")
+            return StopBits.None;
+        else if (text == "One")
+            return StopBits.One;
+        else if (text == "Two")
+            return StopBits.Two;
+        else if (text == "OnePointFive")
+            return StopBits.OnePointFive;
 
-		return StopBits.None;
+        return StopBits.None;
 
-	}
+    }
 
-	protected void OnCmdConnectClicked(object sender, EventArgs e)
-	{
+    protected void OnCmdConnectClicked(object sender, EventArgs e)
+    {
 
-		if (!_serialPort.IsOpen)
-		{
+        if (!_serialPort.IsOpen)
+        {
 
-			try
-			{
+            try
+            {
 
-				_serialPort.PortName = txtPort.Text;
-				_serialPort.BaudRate = Int32.Parse(this.txtBaudRate.Text);
-				_serialPort.Parity = GetParity(this.cmbParity.ActiveText);
-				_serialPort.StopBits = GetStopBits(this.cmbStopBits.ActiveText);
-				_serialPort.ReadTimeout = 200;
-				_serialPort.WriteTimeout = 1000;
-				_serialPort.Encoding = Encoding.UTF8;
+                _serialPort.PortName = txtPort.Text;
+                _serialPort.BaudRate = Int32.Parse(this.txtBaudRate.Text);
+                _serialPort.Parity = GetParity(this.cmbParity.ActiveText);
+                _serialPort.StopBits = GetStopBits(this.cmbStopBits.ActiveText);
+                _serialPort.ReadTimeout = 200;
+                _serialPort.WriteTimeout = 1000;
+                _serialPort.Encoding = Encoding.UTF8;
 
-				_serialPort.Open();
+                _serialPort.Open();
 
-				this.cmdConnect.Label = "Close";
+                this.cmdConnect.Label = "Close";
 
-				OutputText("<Connected to port: " + txtPort.Text + ">" + Environment.NewLine);
+                this.txtSerialData.IsFocus = true;
 
-				_t1 = new Thread(ReadData);
-				_t1.Start();
+                OutputText("<Connected to port: " + txtPort.Text + ">" + Environment.NewLine);
 
-			}
-			catch (Exception)
-			{
+                _t1 = new Thread(ReadData);
+                _t1.Start();
 
-				OutputText("Error: Unable to open port: " + txtPort.Text + Environment.NewLine);
+            }
+            catch (Exception)
+            {
 
-			}
+                OutputText("Error: Unable to open port: " + txtPort.Text + Environment.NewLine);
 
-		}
-		else {
+            }
 
-			try
-			{
+        }
+        else
+        {
 
-				_serialPort.Close();
-				this.cmdConnect.Label = "Open";
+            try
+            {
 
-				OutputText("<Connection closed.>" + Environment.NewLine);
+                _serialPort.Close();
+                this.cmdConnect.Label = "Open";
 
-				_t1.Join();
+                OutputText("<Connection closed.>" + Environment.NewLine);
 
-			}
-			catch (Exception)
-			{
+                _t1.Join();
 
-				OutputText("Error: closing connection." + Environment.NewLine);
+            }
+            catch (Exception)
+            {
 
-			}
+                OutputText("Error: closing connection." + Environment.NewLine);
 
-		}
+            }
 
-		QueueDraw();
+        }
 
-	}
+        QueueDraw();
 
-	protected void OnExitActionActivated(object sender, EventArgs e)
-	{
-		ExitApplication();
-	}
+    }
 
-	protected void OnSendFileActionActivated(object sender, EventArgs e)
-	{
+    protected void OnExitActionActivated(object sender, EventArgs e)
+    {
+        ExitApplication();
+    }
 
-		Gtk.FileChooserDialog aFileChooser = new Gtk.FileChooserDialog("Choose the file to open",
-				this,
-				FileChooserAction.Open,
-				"Cancel", ResponseType.Cancel,
-				"Open", ResponseType.Accept);
+    protected void OnSendFileActionActivated(object sender, EventArgs e)
+    {
 
-		if (aFileChooser.Run() == (int)ResponseType.Accept)
-		{
+        Gtk.FileChooserDialog aFileChooser = new Gtk.FileChooserDialog("Choose the file to open",
+                this,
+                FileChooserAction.Open,
+                "Cancel", ResponseType.Cancel,
+                "Open", ResponseType.Accept);
 
-			try
-			{
+        if (aFileChooser.Run() == (int)ResponseType.Accept)
+        {
 
-				const int bufferLength = 1024;
-				byte[] buffer = new byte[bufferLength];
-				int bytesRead = 0;
+            try
+            {
 
-				using (FileStream source = new FileStream(aFileChooser.Filename, FileMode.Open, FileAccess.Read))
-				{
-					while ((bytesRead = source.Read(buffer, 0, bufferLength)) > 0)
-					{
-						_serialPort.Write(buffer, 0, bytesRead);
-					}
-				}
+                const int bufferLength = 1024;
+                byte[] buffer = new byte[bufferLength];
+                int bytesRead = 0;
 
-				OutputText("File sent: " + aFileChooser.Filename + Environment.NewLine);
+                using (FileStream source = new FileStream(aFileChooser.Filename, FileMode.Open, FileAccess.Read))
+                {
+                    while ((bytesRead = source.Read(buffer, 0, bufferLength)) > 0)
+                    {
+                        _serialPort.Write(buffer, 0, bytesRead);
+                    }
+                }
 
-			}
-			catch (Exception)
-			{
+                OutputText("File sent: " + aFileChooser.Filename + Environment.NewLine);
 
-				OutputText("Error: Unable to write data to serial port." + Environment.NewLine);
+            }
+            catch (Exception)
+            {
 
-			}
+                OutputText("Error: Unable to write data to serial port." + Environment.NewLine);
 
-		}
+            }
 
-		aFileChooser.Destroy();
+        }
 
-	}
+        aFileChooser.Destroy();
 
-	protected void OnClearActionActivated(object sender, EventArgs e)
-	{
+    }
 
-		this.txtSerialData.Buffer.Clear();
-		             
-	}
+    protected void OnClearActionActivated(object sender, EventArgs e)
+    {
 
-	protected void OnSettingsActionActivated(object sender, EventArgs e)
-	{
+        this.txtSerialData.Buffer.Clear();
 
-		_settings.Modal = true;
-		_settings.Show();
-						
-	}
+    }
 
-	protected void OnTxtSerialDataKeyReleaseEvent(object o, KeyReleaseEventArgs args)
-	{
+    protected void OnSettingsActionActivated(object sender, EventArgs e)
+    {
 
-		try
-		{
+        _settings.Modal = true;
+        _settings.Show();
 
-			if (args.Event.Key == Gdk.Key.Return)
-			{
-				_outBuffer[0] = '\r';
+    }
+
+    protected void OnTxtSerialDataKeyReleaseEvent(object o, KeyReleaseEventArgs args)
+    {
+
+        try
+        {
+
+			this.txtSerialData.ScrollToIter(txtSerialData.Buffer.EndIter, 0, false, 0, 0);
+			this.txtSerialData.Buffer.PlaceCursor(this.txtSerialData.Buffer.EndIter);
+
+            if (args.Event.Key == Gdk.Key.Return)
+            {
+                _outBuffer[0] = '\r';
 				_serialPort.Write(_outBuffer, 0, 1);
-			}
-			else if (args.Event.Key == Gdk.Key.Shift_R ||
-			    args.Event.Key == Gdk.Key.Shift_L || 
-			    args.Event.Key == Gdk.Key.Control_R ||
-				args.Event.Key == Gdk.Key.Control_L
-			   )
-			{
-				// Do nothing
-			}
-			else
-			{
-				_outBuffer[0] = (char)args.Event.KeyValue;
-				_serialPort.Write(_outBuffer, 0, 1);
-			}
+            }
+            else if (args.Event.Key == Gdk.Key.Shift_R ||
+                args.Event.Key == Gdk.Key.Shift_L ||
+                args.Event.Key == Gdk.Key.Control_R ||
+                args.Event.Key == Gdk.Key.Control_L
+               )
+            {
+                // Do nothing
+            }
+            else
+            {
+                _outBuffer[0] = (char)args.Event.KeyValue;
+                _serialPort.Write(_outBuffer, 0, 1);
+            }
 
-		}
-		catch (Exception)
-		{
+        }
+        catch (Exception)
+        {
 
-			this.txtSerialData.Buffer.Text += "Error: Unable to write data to serial port." + Environment.NewLine;
-			this.txtSerialData.ScrollToIter(this.txtSerialData.Buffer.EndIter, 0, false, 0, 0);
+            this.txtSerialData.Buffer.Text += "Error: Unable to write data to serial port." + Environment.NewLine;
 
-		}
+        }
+        finally
+        {
 
-		QueueDraw();
+            this.txtSerialData.ScrollToIter(txtSerialData.Buffer.EndIter, 0, false, 0, 0);
+            this.txtSerialData.Buffer.PlaceCursor(this.txtSerialData.Buffer.EndIter);
 
-	}
+            QueueDraw();
+
+        }
+
+    }
+
+    protected void OnTxtSerialDataFocused(object o, FocusedArgs args)
+    {
+
+        this.txtSerialData.Buffer.PlaceCursor(this.txtSerialData.Buffer.EndIter);
+
+    }
 
 }
