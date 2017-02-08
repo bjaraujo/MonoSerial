@@ -70,11 +70,12 @@ public partial class MainWindow : Gtk.Window
 
         _scrollTimer.Start();
 
+		this.txtSerialData.IsFocus = true;
+		this.txtSerialData.AcceptsTab = true;
+
         this.Show();
 
         LoadSettings();
-
-        this.txtSerialData.IsFocus = true;
 
     }
 
@@ -100,9 +101,9 @@ public partial class MainWindow : Gtk.Window
             try
             {
 
-                string aText = _serialPort.ReadExisting();
+				string aText = _serialPort.ReadExisting();
 
-                if (aText.Length > 0)
+				if (aText.Length > 0)
                 {
                     Gtk.Application.Invoke(delegate
                     {
@@ -439,14 +440,29 @@ public partial class MainWindow : Gtk.Window
         try
         {
 
-            this.txtSerialData.ScrollToIter(txtSerialData.Buffer.EndIter, 0, false, 0, 0);
+			this.txtSerialData.ScrollToIter(txtSerialData.Buffer.EndIter, 0, false, 0, 0);
             this.txtSerialData.Buffer.PlaceCursor(this.txtSerialData.Buffer.EndIter);
 
-            if (args.Event.Key == Gdk.Key.Return)
-            {
-                _outBuffer[0] = '\r';
-                _serialPort.Write(_outBuffer, 0, 1);
-            }
+			if (args.Event.Key == Gdk.Key.Return)
+			{
+				_outBuffer[0] = '\r';
+				_serialPort.Write(_outBuffer, 0, 1);
+			}
+			else if (args.Event.Key == Gdk.Key.BackSpace)
+			{
+				_outBuffer[0] = (char)8;
+				_serialPort.Write(_outBuffer, 0, 1);
+			}
+			else if (args.Event.Key == Gdk.Key.Tab)
+			{
+                
+                if (this.txtSerialData.Buffer.Text.Length >= 1)
+                    this.txtSerialData.Buffer.Text = this.txtSerialData.Buffer.Text.Substring(0, this.txtSerialData.Buffer.Text.Length - 1);
+                
+				_outBuffer[0] = (char)9;
+				_serialPort.Write(_outBuffer, 0, 1);
+
+			}
             else if (args.Event.Key == Gdk.Key.Shift_R ||
                 args.Event.Key == Gdk.Key.Shift_L ||
                 args.Event.Key == Gdk.Key.Control_R ||

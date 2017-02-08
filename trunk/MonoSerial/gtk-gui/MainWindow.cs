@@ -186,7 +186,6 @@ public partial class MainWindow
 		this.txtSerialData = new global::Gtk.TextView();
 		this.txtSerialData.CanFocus = true;
 		this.txtSerialData.Name = "txtSerialData";
-		this.txtSerialData.Editable = false;
 		this.GtkScrolledWindow.Add(this.txtSerialData);
 		this.vboxMain.Add(this.GtkScrolledWindow);
 		global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vboxMain[this.GtkScrolledWindow]));
