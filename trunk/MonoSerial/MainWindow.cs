@@ -25,6 +25,7 @@ public partial class MainWindow : Gtk.Window
     char[] _outBuffer = new char[1];
     int _windowLeft, _windowTop, _windowWidth, _windowHeight;
     System.Timers.Timer _scrollTimer;
+	string _buffer = "";
 
     public MainWindow() : base(Gtk.WindowType.Toplevel)
     {
@@ -142,15 +143,24 @@ public partial class MainWindow : Gtk.Window
         if (_settings.AppendOption == MonoSerial.SettingsDialog.Append.CRLF)
             aText += "\r\n";
 
-        //this.txtSerialData.Buffer.Text += aText;
-        //this.txtSerialData.Buffer.Insert(this.txtSerialData.Buffer.EndIter, aText);
-
         TextIter end = this.txtSerialData.Buffer.EndIter;
         this.txtSerialData.Buffer.Insert(ref end, aText);
 
+		_buffer = this.txtSerialData.Buffer.Text;
+
     }
 
-    protected void LoadSettings()
+	protected void OutputMessage(string aText)
+	{
+
+		this.txtSerialData.Buffer.Text += aText;
+		this.txtSerialData.ScrollToIter(this.txtSerialData.Buffer.EndIter, 0, false, 0, 0);
+
+		_buffer = this.txtSerialData.Buffer.Text;
+
+	}
+
+	protected void LoadSettings()
     {
 
         try
@@ -403,13 +413,13 @@ public partial class MainWindow : Gtk.Window
                     }
                 }
 
-                OutputText("File sent: " + aFileChooser.Filename + Environment.NewLine);
+                OutputMessage("File sent: " + aFileChooser.Filename + Environment.NewLine);
 
             }
             catch (Exception)
             {
 
-                OutputText("Error: Unable to write data to serial port." + Environment.NewLine);
+                OutputMessage("Error: Unable to write data to serial port." + Environment.NewLine);
 
             }
 
@@ -440,8 +450,7 @@ public partial class MainWindow : Gtk.Window
         try
         {
 
-			this.txtSerialData.ScrollToIter(txtSerialData.Buffer.EndIter, 0, false, 0, 0);
-            this.txtSerialData.Buffer.PlaceCursor(this.txtSerialData.Buffer.EndIter);
+			this.txtSerialData.Buffer.Text = _buffer;
 
 			if (args.Event.Key == Gdk.Key.Return)
 			{
@@ -454,14 +463,9 @@ public partial class MainWindow : Gtk.Window
 				_serialPort.Write(_outBuffer, 0, 1);
 			}
 			else if (args.Event.Key == Gdk.Key.Tab)
-			{
-                
-                if (this.txtSerialData.Buffer.Text.Length >= 1)
-                    this.txtSerialData.Buffer.Text = this.txtSerialData.Buffer.Text.Substring(0, this.txtSerialData.Buffer.Text.Length - 1);
-                
+			{                                
 				_outBuffer[0] = (char)9;
 				_serialPort.Write(_outBuffer, 0, 1);
-
 			}
             else if (args.Event.Key == Gdk.Key.Shift_R ||
                 args.Event.Key == Gdk.Key.Shift_L ||
@@ -481,7 +485,7 @@ public partial class MainWindow : Gtk.Window
         catch (Exception)
         {
 
-            this.txtSerialData.Buffer.Text += "Error: Unable to write data to serial port." + Environment.NewLine;
+			OutputMessage("Error: Unable to write data to serial port." + Environment.NewLine);
 
         }
         finally
@@ -489,6 +493,8 @@ public partial class MainWindow : Gtk.Window
 
             this.txtSerialData.ScrollToIter(txtSerialData.Buffer.EndIter, 0, false, 0, 0);
             this.txtSerialData.Buffer.PlaceCursor(this.txtSerialData.Buffer.EndIter);
+
+			_buffer = this.txtSerialData.Buffer.Text;
 
             QueueDraw();
 
@@ -519,8 +525,9 @@ public partial class MainWindow : Gtk.Window
 		catch (Exception)
 		{
 
-			this.txtSerialData.Buffer.Text += "Error: Unable to write data to serial port." + Environment.NewLine;
-			this.txtSerialData.ScrollToIter(this.txtSerialData.Buffer.EndIter, 0, false, 0, 0);
+			OutputMessage("Error: Unable to write data to serial port." + Environment.NewLine);
+
+			_buffer = this.txtSerialData.Buffer.Text;
 
 		}
 
