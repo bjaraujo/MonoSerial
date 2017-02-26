@@ -212,6 +212,7 @@
                 <property name="CanFocus">True</property>
                 <property name="ShowScrollbars">True</property>
                 <property name="Text" translatable="yes" />
+                <signal name="FocusOutEvent" handler="OnTxtSerialDataFocusOutEvent" />
                 <signal name="KeyReleaseEvent" handler="OnTxtSerialDataKeyReleaseEvent" />
               </widget>
             </child>

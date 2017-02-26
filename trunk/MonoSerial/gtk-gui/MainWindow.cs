@@ -215,6 +215,7 @@ public partial class MainWindow
 		this.ClearAction.Activated += new global::System.EventHandler(this.OnClearActionActivated);
 		this.SettingsAction.Activated += new global::System.EventHandler(this.OnSettingsActionActivated);
 		this.cmdConnect.Clicked += new global::System.EventHandler(this.OnCmdConnectClicked);
+		this.txtSerialData.FocusOutEvent += new global::Gtk.FocusOutEventHandler(this.OnTxtSerialDataFocusOutEvent);
 		this.txtSerialData.KeyReleaseEvent += new global::Gtk.KeyReleaseEventHandler(this.OnTxtSerialDataKeyReleaseEvent);
 		this.txtCommand.KeyReleaseEvent += new global::Gtk.KeyReleaseEventHandler(this.OnTxtCommandKeyReleaseEvent);
 	}

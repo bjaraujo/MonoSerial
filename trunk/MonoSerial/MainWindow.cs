@@ -4,7 +4,6 @@ using System.IO.Ports;
 using System.Threading;
 using System.Diagnostics;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Timers;
 using Gtk;
 using IniParser;
@@ -25,7 +24,7 @@ public partial class MainWindow : Gtk.Window
     char[] _outBuffer = new char[1];
     int _windowLeft, _windowTop, _windowWidth, _windowHeight;
     System.Timers.Timer _scrollTimer;
-	string _buffer = "";
+	bool _keyPressed = true;
 
     public MainWindow() : base(Gtk.WindowType.Toplevel)
     {
@@ -73,6 +72,7 @@ public partial class MainWindow : Gtk.Window
 
 		this.txtSerialData.IsFocus = true;
 		this.txtSerialData.AcceptsTab = true;
+		this.txtSerialData.Editable = false;
 
         this.Show();
 
@@ -146,8 +146,6 @@ public partial class MainWindow : Gtk.Window
         TextIter end = this.txtSerialData.Buffer.EndIter;
         this.txtSerialData.Buffer.Insert(ref end, aText);
 
-		_buffer = this.txtSerialData.Buffer.Text;
-
     }
 
 	protected void OutputMessage(string aText)
@@ -155,8 +153,6 @@ public partial class MainWindow : Gtk.Window
 
 		this.txtSerialData.Buffer.Text += aText;
 		this.txtSerialData.ScrollToIter(this.txtSerialData.Buffer.EndIter, 0, false, 0, 0);
-
-		_buffer = this.txtSerialData.Buffer.Text;
 
 	}
 
@@ -444,64 +440,6 @@ public partial class MainWindow : Gtk.Window
 
     }
 
-    protected void OnTxtSerialDataKeyReleaseEvent(object o, KeyReleaseEventArgs args)
-    {
-
-        try
-        {
-
-			this.txtSerialData.Buffer.Text = _buffer;
-
-			if (args.Event.Key == Gdk.Key.Return)
-			{
-				_outBuffer[0] = '\r';
-				_serialPort.Write(_outBuffer, 0, 1);
-			}
-			else if (args.Event.Key == Gdk.Key.BackSpace)
-			{
-				_outBuffer[0] = (char)8;
-				_serialPort.Write(_outBuffer, 0, 1);
-			}
-			else if (args.Event.Key == Gdk.Key.Tab)
-			{                                
-				_outBuffer[0] = (char)9;
-				_serialPort.Write(_outBuffer, 0, 1);
-			}
-            else if (args.Event.Key == Gdk.Key.Shift_R ||
-                args.Event.Key == Gdk.Key.Shift_L ||
-                args.Event.Key == Gdk.Key.Control_R ||
-                args.Event.Key == Gdk.Key.Control_L
-               )
-            {
-                // Do nothing
-            }
-            else
-            {
-                _outBuffer[0] = (char)args.Event.KeyValue;
-                _serialPort.Write(_outBuffer, 0, 1);
-            }
-
-        }
-        catch (Exception)
-        {
-
-			OutputMessage("Error: Unable to write data to serial port." + Environment.NewLine);
-
-        }
-        finally
-        {
-
-            this.txtSerialData.ScrollToIter(txtSerialData.Buffer.EndIter, 0, false, 0, 0);
-            this.txtSerialData.Buffer.PlaceCursor(this.txtSerialData.Buffer.EndIter);
-
-			_buffer = this.txtSerialData.Buffer.Text;
-
-            QueueDraw();
-
-        }
-
-    }
-
     protected void OnTxtSerialDataFocused(object o, FocusedArgs args)
     {
 
@@ -527,11 +465,76 @@ public partial class MainWindow : Gtk.Window
 
 			OutputMessage("Error: Unable to write data to serial port." + Environment.NewLine);
 
-			_buffer = this.txtSerialData.Buffer.Text;
-
 		}
 
 		QueueDraw();
+
+	}
+
+	protected void OnTxtSerialDataFocusOutEvent(object o, FocusOutEventArgs args)
+	{
+
+		if (_keyPressed)
+		{
+			this.txtSerialData.IsFocus = true;
+			_keyPressed = false;
+		}
+
+	}
+
+	protected void OnTxtSerialDataKeyReleaseEvent(object o, KeyReleaseEventArgs args)
+	{
+
+		try
+		{
+
+			_keyPressed = true;
+
+			if (args.Event.Key == Gdk.Key.Return)
+			{
+				_outBuffer[0] = '\r';
+				_serialPort.Write(_outBuffer, 0, 1);
+			}
+			else if (args.Event.Key == Gdk.Key.BackSpace)
+			{
+				_outBuffer[0] = (char)8;
+				_serialPort.Write(_outBuffer, 0, 1);
+			}
+			else if (args.Event.Key == Gdk.Key.Tab)
+			{
+				_outBuffer[0] = (char)9;
+				_serialPort.Write(_outBuffer, 0, 1);
+			}
+			else if (args.Event.Key == Gdk.Key.Shift_R ||
+				args.Event.Key == Gdk.Key.Shift_L ||
+				args.Event.Key == Gdk.Key.Control_R ||
+				args.Event.Key == Gdk.Key.Control_L
+			   )
+			{
+				// Do nothing
+			}
+			else
+			{
+				_outBuffer[0] = (char)args.Event.KeyValue;
+				_serialPort.Write(_outBuffer, 0, 1);
+			}
+
+		}
+		catch (Exception)
+		{
+
+			OutputMessage("Error: Unable to write data to serial port." + Environment.NewLine);
+
+		}
+		finally
+		{
+
+			this.txtSerialData.ScrollToIter(txtSerialData.Buffer.EndIter, 0, false, 0, 0);
+			this.txtSerialData.Buffer.PlaceCursor(this.txtSerialData.Buffer.EndIter);
+
+			QueueDraw();
+
+		}
 
 	}
 
