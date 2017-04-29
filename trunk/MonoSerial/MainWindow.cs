@@ -25,7 +25,8 @@ public partial class MainWindow : Gtk.Window
     int _windowLeft, _windowTop, _windowWidth, _windowHeight;
     System.Timers.Timer _scrollTimer;
 	bool _keyPressed = true;
-
+    bool _tabPressed = false;
+    
     public MainWindow() : base(Gtk.WindowType.Toplevel)
     {
 
@@ -63,12 +64,11 @@ public partial class MainWindow : Gtk.Window
         _settings.Hide();
 
         _scrollTimer = new System.Timers.Timer(500);
-
         _scrollTimer.Elapsed += new ElapsedEventHandler(OnTimeEvent);
-
         _scrollTimer.AutoReset = true;
-
         _scrollTimer.Start();
+
+        this.txtSerialData.Buffer.Changed += new EventHandler(onChangeEvent); 
 
 		this.txtSerialData.IsFocus = true;
 		this.txtSerialData.AcceptsTab = true;
@@ -108,10 +108,6 @@ public partial class MainWindow : Gtk.Window
                 {
                     Gtk.Application.Invoke(delegate
                     {
-
-                        // Clear buffer
-                        if (this.txtSerialData.Buffer.LineCount > 10000)
-                            this.txtSerialData.Buffer.Clear();
 
                         OutputText(aText);
 
@@ -489,7 +485,8 @@ public partial class MainWindow : Gtk.Window
 		{
 
 			_keyPressed = true;
-
+            _tabPressed = false;
+            
 			if (args.Event.Key == Gdk.Key.Return)
 			{
 				_outBuffer[0] = '\r';
@@ -497,24 +494,30 @@ public partial class MainWindow : Gtk.Window
 			}
 			else if (args.Event.Key == Gdk.Key.BackSpace)
 			{
+   				this.txtSerialData.Buffer.Text = this.txtSerialData.Buffer.Text.Substring(0, this.txtSerialData.Buffer.Text.Length - 1);
 				_outBuffer[0] = (char)8;
 				_serialPort.Write(_outBuffer, 0, 1);
-			}
+            }
 			else if (args.Event.Key == Gdk.Key.Tab)
 			{
+                _tabPressed = true;
 				_outBuffer[0] = (char)9;
 				_serialPort.Write(_outBuffer, 0, 1);
 			}
 			else if (args.Event.Key == Gdk.Key.Shift_R ||
-				args.Event.Key == Gdk.Key.Shift_L ||
-				args.Event.Key == Gdk.Key.Control_R ||
-				args.Event.Key == Gdk.Key.Control_L
-			   )
+					 args.Event.Key == Gdk.Key.Shift_L ||
+					 args.Event.Key == Gdk.Key.Control_R ||
+					 args.Event.Key == Gdk.Key.Control_L ||
+ 			    	 args.Event.Key == Gdk.Key.Caps_Lock ||
+			         args.Event.Key == Gdk.Key.Home ||
+					 args.Event.Key == Gdk.Key.End ||
+					 args.Event.Key == Gdk.Key.Page_Down ||
+			         args.Event.Key == Gdk.Key.Page_Up)
 			{
 				// Do nothing
 			}
 			else
-			{
+            {
 				_outBuffer[0] = (char)args.Event.KeyValue;
 				_serialPort.Write(_outBuffer, 0, 1);
 			}
@@ -538,4 +541,14 @@ public partial class MainWindow : Gtk.Window
 
 	}
 
+    public void onChangeEvent(object sender,EventArgs e) {
+
+		if (_tabPressed)
+		{
+			this.txtSerialData.Buffer.Text = this.txtSerialData.Buffer.Text.TrimEnd('\t');
+			_tabPressed = false;
+		}
+
+    }
+    
 }
