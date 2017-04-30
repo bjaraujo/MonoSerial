@@ -168,7 +168,7 @@ public partial class MainWindow
 		this.cmdConnect.CanFocus = true;
 		this.cmdConnect.Name = "cmdConnect";
 		this.cmdConnect.UseUnderline = true;
-		this.cmdConnect.Label = global::Mono.Unix.Catalog.GetString("Connect");
+		this.cmdConnect.Label = global::Mono.Unix.Catalog.GetString("Open");
 		this.hboxMain.Add(this.cmdConnect);
 		global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hboxMain[this.cmdConnect]));
 		w11.Position = 9;

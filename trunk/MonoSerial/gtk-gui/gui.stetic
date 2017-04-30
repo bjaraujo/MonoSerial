@@ -184,7 +184,7 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Type">TextOnly</property>
-                <property name="Label" translatable="yes">Connect</property>
+                <property name="Label" translatable="yes">Open</property>
                 <property name="UseUnderline">True</property>
                 <signal name="Clicked" handler="OnCmdConnectClicked" />
               </widget>

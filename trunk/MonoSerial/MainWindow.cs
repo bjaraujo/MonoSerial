@@ -131,7 +131,7 @@ public partial class MainWindow : Gtk.Window
 
     protected void OutputText(string aText)
     {
-
+	           
         if (_settings.AppendOption == MonoSerial.SettingsDialog.Append.CR)
             aText += "\r";
         else if (_settings.AppendOption == MonoSerial.SettingsDialog.Append.LF)
@@ -147,7 +147,7 @@ public partial class MainWindow : Gtk.Window
 	protected void OutputMessage(string aText)
 	{
 
-		this.txtSerialData.Buffer.Text += aText;
+		this.txtSerialData.Buffer.Text += aText + Environment.NewLine;
 		this.txtSerialData.ScrollToIter(this.txtSerialData.Buffer.EndIter, 0, false, 0, 0);
 
 	}
@@ -332,7 +332,7 @@ public partial class MainWindow : Gtk.Window
 
                 this.txtSerialData.IsFocus = true;
 
-                OutputText("<Connected to port: " + txtPort.Text + ">" + Environment.NewLine);
+                OutputMessage("<Connected to port: " + txtPort.Text + ">");
 
                 _t1 = new Thread(ReadData);
                 _t1.Start();
@@ -341,7 +341,7 @@ public partial class MainWindow : Gtk.Window
             catch (Exception)
             {
 
-                OutputText("Error: Unable to open port: " + txtPort.Text + Environment.NewLine);
+                OutputMessage("Error: Unable to open port: " + txtPort.Text);
 
             }
 
@@ -355,7 +355,7 @@ public partial class MainWindow : Gtk.Window
                 _serialPort.Close();
                 this.cmdConnect.Label = "Open";
 
-                OutputText("<Connection closed.>" + Environment.NewLine);
+                OutputMessage("<Connection closed.>");
 
                 _t1.Join();
 
@@ -363,7 +363,7 @@ public partial class MainWindow : Gtk.Window
             catch (Exception)
             {
 
-                OutputText("Error: closing connection." + Environment.NewLine);
+                OutputMessage("Error: closing connection.");
 
             }
 
@@ -405,13 +405,13 @@ public partial class MainWindow : Gtk.Window
                     }
                 }
 
-                OutputMessage("File sent: " + aFileChooser.Filename + Environment.NewLine);
+                OutputMessage("File sent: " + aFileChooser.Filename);
 
             }
             catch (Exception)
             {
 
-                OutputMessage("Error: Unable to write data to serial port." + Environment.NewLine);
+                OutputMessage("Error: Unable to write data to serial port.");
 
             }
 
@@ -459,7 +459,7 @@ public partial class MainWindow : Gtk.Window
 		catch (Exception)
 		{
 
-			OutputMessage("Error: Unable to write data to serial port." + Environment.NewLine);
+			OutputMessage("Error: Unable to write data to serial port.");
 
 		}
 
@@ -488,6 +488,8 @@ public partial class MainWindow : Gtk.Window
 			key == Gdk.Key.Alt_R ||
 			key == Gdk.Key.Alt_L ||
 		  	key == Gdk.Key.Caps_Lock ||
+		  	key == Gdk.Key.Num_Lock ||
+		    key == Gdk.Key.Scroll_Lock ||
 		    key == Gdk.Key.Print ||
 		 	key == Gdk.Key.Home ||
 		 	key == Gdk.Key.End ||
@@ -508,7 +510,18 @@ public partial class MainWindow : Gtk.Window
 		   	key == Gdk.Key.F9 ||
 		   	key == Gdk.Key.F10 ||
 			key == Gdk.Key.F11 ||
-		 	key == Gdk.Key.F12)
+		 	key == Gdk.Key.F12 ||
+			key == Gdk.Key.KP_Multiply ||
+			key == Gdk.Key.KP_Divide ||
+			key == Gdk.Key.KP_1 ||
+			key == Gdk.Key.KP_2 ||
+			key == Gdk.Key.KP_3 ||
+			key == Gdk.Key.KP_4 ||
+			key == Gdk.Key.KP_5 ||
+			key == Gdk.Key.KP_6 ||
+			key == Gdk.Key.KP_7 ||
+			key == Gdk.Key.KP_8 ||
+		    key == Gdk.Key.KP_9)
 		{
 			return true;
 		}
@@ -538,7 +551,9 @@ public partial class MainWindow : Gtk.Window
 			}
 			else if (args.Event.Key == Gdk.Key.BackSpace)
 			{
-   				this.txtSerialData.Buffer.Text = this.txtSerialData.Buffer.Text.Substring(0, this.txtSerialData.Buffer.Text.Length - 1);
+				if (this.txtSerialData.Buffer.Text.Length > 0)
+   					this.txtSerialData.Buffer.Text = this.txtSerialData.Buffer.Text.Substring(0, this.txtSerialData.Buffer.Text.Length - 1);
+
 				_outBuffer[0] = (char)8;
 				_serialPort.Write(_outBuffer, 0, 1);
             }
@@ -558,7 +573,7 @@ public partial class MainWindow : Gtk.Window
 		catch (Exception)
 		{
 
-			OutputMessage("Error: Unable to write data to serial port." + Environment.NewLine);
+			OutputMessage("Error: Unable to write data to serial port.");
 
 		}
 		finally
