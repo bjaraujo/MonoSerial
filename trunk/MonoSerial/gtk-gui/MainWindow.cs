@@ -25,11 +25,11 @@ public partial class MainWindow
 
 	private global::Gtk.Label lblPort;
 
-	private global::Gtk.Entry txtPort;
+	private global::Gtk.ComboBoxEntry cmbPort;
 
 	private global::Gtk.Label lblBaudRate;
 
-	private global::Gtk.Entry txtBaudRate;
+	private global::Gtk.ComboBoxEntry cmbBaudRate;
 
 	private global::Gtk.Label lblParity;
 
@@ -103,14 +103,13 @@ public partial class MainWindow
 		w3.Expand = false;
 		w3.Fill = false;
 		// Container child hboxMain.Gtk.Box+BoxChild
-		this.txtPort = new global::Gtk.Entry();
-		this.txtPort.CanFocus = true;
-		this.txtPort.Name = "txtPort";
-		this.txtPort.IsEditable = true;
-		this.txtPort.InvisibleChar = '•';
-		this.hboxMain.Add(this.txtPort);
-		global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hboxMain[this.txtPort]));
+		this.cmbPort = global::Gtk.ComboBoxEntry.NewText();
+		this.cmbPort.Name = "cmbPort";
+		this.hboxMain.Add(this.cmbPort);
+		global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hboxMain[this.cmbPort]));
 		w4.Position = 1;
+		w4.Expand = false;
+		w4.Fill = false;
 		// Container child hboxMain.Gtk.Box+BoxChild
 		this.lblBaudRate = new global::Gtk.Label();
 		this.lblBaudRate.Name = "lblBaudRate";
@@ -121,14 +120,13 @@ public partial class MainWindow
 		w5.Expand = false;
 		w5.Fill = false;
 		// Container child hboxMain.Gtk.Box+BoxChild
-		this.txtBaudRate = new global::Gtk.Entry();
-		this.txtBaudRate.CanFocus = true;
-		this.txtBaudRate.Name = "txtBaudRate";
-		this.txtBaudRate.IsEditable = true;
-		this.txtBaudRate.InvisibleChar = '•';
-		this.hboxMain.Add(this.txtBaudRate);
-		global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hboxMain[this.txtBaudRate]));
+		this.cmbBaudRate = global::Gtk.ComboBoxEntry.NewText();
+		this.cmbBaudRate.Name = "cmbBaudRate";
+		this.hboxMain.Add(this.cmbBaudRate);
+		global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hboxMain[this.cmbBaudRate]));
 		w6.Position = 3;
+		w6.Expand = false;
+		w6.Fill = false;
 		// Container child hboxMain.Gtk.Box+BoxChild
 		this.lblParity = new global::Gtk.Label();
 		this.lblParity.Name = "lblParity";

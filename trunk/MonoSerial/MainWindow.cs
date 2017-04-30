@@ -24,9 +24,9 @@ public partial class MainWindow : Gtk.Window
     char[] _outBuffer = new char[1];
     int _windowLeft, _windowTop, _windowWidth, _windowHeight;
     System.Timers.Timer _scrollTimer;
-	bool _keyPressed = true;
+    bool _keyPressed = true;
     bool _tabPressed = false;
-    
+
     public MainWindow() : base(Gtk.WindowType.Toplevel)
     {
 
@@ -38,12 +38,27 @@ public partial class MainWindow : Gtk.Window
 
         //Debug.WriteLine(System.Environment.OSVersion);
 
-        if (System.Environment.OSVersion.Platform == PlatformID.Unix)
-            this.txtPort.Text = "/dev/ttyS0";
-        else
-            this.txtPort.Text = "COM1";
+        string[] portNames = SerialPort.GetPortNames();
 
-        this.txtBaudRate.Text = "9600";
+        foreach (string portName in portNames)
+        {
+            this.cmbPort.AppendText(portName);
+        }
+
+        this.cmbBaudRate.AppendText("110");
+        this.cmbBaudRate.AppendText("300");
+        this.cmbBaudRate.AppendText("600");
+        this.cmbBaudRate.AppendText("1200");
+        this.cmbBaudRate.AppendText("2400");
+        this.cmbBaudRate.AppendText("4800");
+        this.cmbBaudRate.AppendText("9600");
+        this.cmbBaudRate.AppendText("14400");
+        this.cmbBaudRate.AppendText("19200");
+        this.cmbBaudRate.AppendText("38400");
+        this.cmbBaudRate.AppendText("57600");
+        this.cmbBaudRate.AppendText("115200");
+        this.cmbBaudRate.AppendText("128000");
+        this.cmbBaudRate.AppendText("256000");
 
         this.cmbParity.AppendText("None");
         this.cmbParity.AppendText("Odd");
@@ -68,11 +83,11 @@ public partial class MainWindow : Gtk.Window
         _scrollTimer.AutoReset = true;
         _scrollTimer.Start();
 
-        this.txtSerialData.Buffer.Changed += new EventHandler(onChangeEvent); 
+        this.txtSerialData.Buffer.Changed += new EventHandler(onChangeEvent);
 
-		this.txtSerialData.IsFocus = true;
-		this.txtSerialData.AcceptsTab = true;
-		this.txtSerialData.Editable = false;
+        this.txtSerialData.IsFocus = true;
+        this.txtSerialData.AcceptsTab = true;
+        this.txtSerialData.Editable = false;
 
         this.Show();
 
@@ -102,9 +117,9 @@ public partial class MainWindow : Gtk.Window
             try
             {
 
-				string aText = _serialPort.ReadExisting();
+                string aText = _serialPort.ReadExisting();
 
-				if (aText.Length > 0)
+                if (aText.Length > 0)
                 {
                     Gtk.Application.Invoke(delegate
                     {
@@ -131,7 +146,7 @@ public partial class MainWindow : Gtk.Window
 
     protected void OutputText(string aText)
     {
-	           
+
         if (_settings.AppendOption == MonoSerial.SettingsDialog.Append.CR)
             aText += "\r";
         else if (_settings.AppendOption == MonoSerial.SettingsDialog.Append.LF)
@@ -144,15 +159,15 @@ public partial class MainWindow : Gtk.Window
 
     }
 
-	protected void OutputMessage(string aText)
-	{
+    protected void OutputMessage(string aText)
+    {
 
-		this.txtSerialData.Buffer.Text += aText + Environment.NewLine;
-		this.txtSerialData.ScrollToIter(this.txtSerialData.Buffer.EndIter, 0, false, 0, 0);
+        this.txtSerialData.Buffer.Text += aText + Environment.NewLine;
+        this.txtSerialData.ScrollToIter(this.txtSerialData.Buffer.EndIter, 0, false, 0, 0);
 
-	}
+    }
 
-	protected void LoadSettings()
+    protected void LoadSettings()
     {
 
         try
@@ -163,8 +178,10 @@ public partial class MainWindow : Gtk.Window
             IniData data = aParser.ReadFile(_iniFileName);
 
             // SerialPort
-            this.txtPort.Text = data["SerialPort"]["Name"];
-            this.txtBaudRate.Text = data["SerialPort"]["Speed"];
+			this.cmbPort.InsertText(0, data["SerialPort"]["Name"]);
+			this.cmbPort.Active = 0;
+			this.cmbBaudRate.InsertText(0, data["SerialPort"]["Speed"]);
+			this.cmbBaudRate.Active = 0;
             this.cmbParity.Active = Int32.Parse(data["SerialPort"]["Parity"]);
             this.cmbStopBits.Active = Int32.Parse(data["SerialPort"]["Stopbit"]);
 
@@ -221,8 +238,8 @@ public partial class MainWindow : Gtk.Window
             IniData data = aParser.ReadFile(_iniFileName);
 
             // SerialPort
-            data["SerialPort"]["Name"] = this.txtPort.Text;
-            data["SerialPort"]["Speed"] = this.txtBaudRate.Text;
+            data["SerialPort"]["Name"] = this.cmbPort.ActiveText;
+            data["SerialPort"]["Speed"] = this.cmbBaudRate.ActiveText;
             data["SerialPort"]["Parity"] = this.cmbParity.Active.ToString();
             data["SerialPort"]["Stopbit"] = this.cmbStopBits.Active.ToString();
 
@@ -318,8 +335,8 @@ public partial class MainWindow : Gtk.Window
             try
             {
 
-                _serialPort.PortName = txtPort.Text;
-                _serialPort.BaudRate = Int32.Parse(this.txtBaudRate.Text);
+                _serialPort.PortName = cmbPort.ActiveText;
+				_serialPort.BaudRate = Int32.Parse(this.cmbBaudRate.ActiveText);
                 _serialPort.Parity = GetParity(this.cmbParity.ActiveText);
                 _serialPort.StopBits = GetStopBits(this.cmbStopBits.ActiveText);
                 _serialPort.ReadTimeout = 200;
@@ -332,7 +349,7 @@ public partial class MainWindow : Gtk.Window
 
                 this.txtSerialData.IsFocus = true;
 
-                OutputMessage("<Connected to port: " + txtPort.Text + ">");
+                OutputMessage("<Connected to port: " + cmbPort.ActiveText + ">");
 
                 _t1 = new Thread(ReadData);
                 _t1.Start();
@@ -341,7 +358,7 @@ public partial class MainWindow : Gtk.Window
             catch (Exception)
             {
 
-                OutputMessage("Error: Unable to open port: " + txtPort.Text);
+                OutputMessage("Error: Unable to open port: " + cmbPort.ActiveText);
 
             }
 
@@ -443,159 +460,160 @@ public partial class MainWindow : Gtk.Window
 
     }
 
-	protected void OnTxtCommandKeyReleaseEvent(object o, KeyReleaseEventArgs args)
-	{
+    protected void OnTxtCommandKeyReleaseEvent(object o, KeyReleaseEventArgs args)
+    {
 
-		try
-		{
+        try
+        {
 
-			if (args.Event.Key == Gdk.Key.Return)
-			{
-				_serialPort.WriteLine(this.txtCommand.Text);
-				this.txtCommand.Text = "";
-			}
-
-		}
-		catch (Exception)
-		{
-
-			OutputMessage("Error: Unable to write data to serial port.");
-
-		}
-
-		QueueDraw();
-
-	}
-
-	protected void OnTxtSerialDataFocusOutEvent(object o, FocusOutEventArgs args)
-	{
-
-		if (_keyPressed)
-		{
-			this.txtSerialData.IsFocus = true;
-			_keyPressed = false;
-		}
-
-	}
-
-	protected bool isSpecialKey(Gdk.Key key)
-	{
-
-		if (key == Gdk.Key.Shift_R ||
-		 	key == Gdk.Key.Shift_L ||
-		 	key == Gdk.Key.Control_R ||
-		 	key == Gdk.Key.Control_L ||
-			key == Gdk.Key.Alt_R ||
-			key == Gdk.Key.Alt_L ||
-		  	key == Gdk.Key.Caps_Lock ||
-		  	key == Gdk.Key.Num_Lock ||
-		    key == Gdk.Key.Scroll_Lock ||
-		    key == Gdk.Key.Print ||
-		 	key == Gdk.Key.Home ||
-		 	key == Gdk.Key.End ||
-		 	key == Gdk.Key.Page_Down ||
-		 	key == Gdk.Key.Page_Up ||
-		    key == Gdk.Key.Escape ||
-		 	key == Gdk.Key.Delete ||
-		    key == Gdk.Key.Insert ||
-		 	key == Gdk.Key.Pause ||
-		 	key == Gdk.Key.F1 ||
-		 	key == Gdk.Key.F2 ||
-		 	key == Gdk.Key.F3 ||
-		 	key == Gdk.Key.F4 ||
-		   	key == Gdk.Key.F5 ||
-		   	key == Gdk.Key.F6 ||
-		   	key == Gdk.Key.F7 ||
-			key == Gdk.Key.F8 ||
-		   	key == Gdk.Key.F9 ||
-		   	key == Gdk.Key.F10 ||
-			key == Gdk.Key.F11 ||
-		 	key == Gdk.Key.F12 ||
-			key == Gdk.Key.KP_Multiply ||
-			key == Gdk.Key.KP_Divide ||
-			key == Gdk.Key.KP_1 ||
-			key == Gdk.Key.KP_2 ||
-			key == Gdk.Key.KP_3 ||
-			key == Gdk.Key.KP_4 ||
-			key == Gdk.Key.KP_5 ||
-			key == Gdk.Key.KP_6 ||
-			key == Gdk.Key.KP_7 ||
-			key == Gdk.Key.KP_8 ||
-		    key == Gdk.Key.KP_9)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-
-	}
-
-	protected void OnTxtSerialDataKeyReleaseEvent(object o, KeyReleaseEventArgs args)
-	{
-
-		try
-		{
-
-			_keyPressed = true;
-            _tabPressed = false;
-
-			if (isSpecialKey(args.Event.Key))
-				return;
-
-			if (args.Event.Key == Gdk.Key.Return)
-			{
-				_outBuffer[0] = '\r';
-				_serialPort.Write(_outBuffer, 0, 1);
-			}
-			else if (args.Event.Key == Gdk.Key.BackSpace)
-			{
-				if (this.txtSerialData.Buffer.Text.Length > 0)
-   					this.txtSerialData.Buffer.Text = this.txtSerialData.Buffer.Text.Substring(0, this.txtSerialData.Buffer.Text.Length - 1);
-
-				_outBuffer[0] = (char)8;
-				_serialPort.Write(_outBuffer, 0, 1);
-            }
-			else if (args.Event.Key == Gdk.Key.Tab)
-			{
-                _tabPressed = true;
-				_outBuffer[0] = (char)9;
-				_serialPort.Write(_outBuffer, 0, 1);
-			}
-			else
+            if (args.Event.Key == Gdk.Key.Return)
             {
-				_outBuffer[0] = (char)args.Event.KeyValue;
-				_serialPort.Write(_outBuffer, 0, 1);
-			}
+                _serialPort.WriteLine(this.txtCommand.Text);
+                this.txtCommand.Text = "";
+            }
 
-		}
-		catch (Exception)
-		{
+        }
+        catch (Exception)
+        {
 
-			OutputMessage("Error: Unable to write data to serial port.");
+            OutputMessage("Error: Unable to write data to serial port.");
 
-		}
-		finally
-		{
+        }
 
-			this.txtSerialData.ScrollToIter(txtSerialData.Buffer.EndIter, 0, false, 0, 0);
-			this.txtSerialData.Buffer.PlaceCursor(this.txtSerialData.Buffer.EndIter);
-
-			QueueDraw();
-
-		}
-
-	}
-
-    public void onChangeEvent(object sender,EventArgs e) {
-
-		if (_tabPressed)
-		{
-			this.txtSerialData.Buffer.Text = this.txtSerialData.Buffer.Text.TrimEnd('\t');
-			_tabPressed = false;
-		}
+        QueueDraw();
 
     }
-    
+
+    protected void OnTxtSerialDataFocusOutEvent(object o, FocusOutEventArgs args)
+    {
+
+        if (_keyPressed)
+        {
+            this.txtSerialData.IsFocus = true;
+            _keyPressed = false;
+        }
+
+    }
+
+    protected bool isSpecialKey(Gdk.Key key)
+    {
+
+        if (key == Gdk.Key.Shift_R ||
+             key == Gdk.Key.Shift_L ||
+             key == Gdk.Key.Control_R ||
+             key == Gdk.Key.Control_L ||
+            key == Gdk.Key.Alt_R ||
+            key == Gdk.Key.Alt_L ||
+              key == Gdk.Key.Caps_Lock ||
+              key == Gdk.Key.Num_Lock ||
+            key == Gdk.Key.Scroll_Lock ||
+            key == Gdk.Key.Print ||
+             key == Gdk.Key.Home ||
+             key == Gdk.Key.End ||
+             key == Gdk.Key.Page_Down ||
+             key == Gdk.Key.Page_Up ||
+            key == Gdk.Key.Escape ||
+             key == Gdk.Key.Delete ||
+            key == Gdk.Key.Insert ||
+             key == Gdk.Key.Pause ||
+             key == Gdk.Key.F1 ||
+             key == Gdk.Key.F2 ||
+             key == Gdk.Key.F3 ||
+             key == Gdk.Key.F4 ||
+               key == Gdk.Key.F5 ||
+               key == Gdk.Key.F6 ||
+               key == Gdk.Key.F7 ||
+            key == Gdk.Key.F8 ||
+               key == Gdk.Key.F9 ||
+               key == Gdk.Key.F10 ||
+            key == Gdk.Key.F11 ||
+             key == Gdk.Key.F12 ||
+            key == Gdk.Key.KP_Multiply ||
+            key == Gdk.Key.KP_Divide ||
+            key == Gdk.Key.KP_1 ||
+            key == Gdk.Key.KP_2 ||
+            key == Gdk.Key.KP_3 ||
+            key == Gdk.Key.KP_4 ||
+            key == Gdk.Key.KP_5 ||
+            key == Gdk.Key.KP_6 ||
+            key == Gdk.Key.KP_7 ||
+            key == Gdk.Key.KP_8 ||
+            key == Gdk.Key.KP_9)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
+    }
+
+    protected void OnTxtSerialDataKeyReleaseEvent(object o, KeyReleaseEventArgs args)
+    {
+
+        try
+        {
+
+            _keyPressed = true;
+            _tabPressed = false;
+
+            if (isSpecialKey(args.Event.Key))
+                return;
+
+            if (args.Event.Key == Gdk.Key.Return)
+            {
+                _outBuffer[0] = '\r';
+                _serialPort.Write(_outBuffer, 0, 1);
+            }
+            else if (args.Event.Key == Gdk.Key.BackSpace)
+            {
+                if (this.txtSerialData.Buffer.Text.Length > 0)
+                    this.txtSerialData.Buffer.Text = this.txtSerialData.Buffer.Text.Substring(0, this.txtSerialData.Buffer.Text.Length - 1);
+
+                _outBuffer[0] = (char)8;
+                _serialPort.Write(_outBuffer, 0, 1);
+            }
+            else if (args.Event.Key == Gdk.Key.Tab)
+            {
+                _tabPressed = true;
+                _outBuffer[0] = (char)9;
+                _serialPort.Write(_outBuffer, 0, 1);
+            }
+            else
+            {
+                _outBuffer[0] = (char)args.Event.KeyValue;
+                _serialPort.Write(_outBuffer, 0, 1);
+            }
+
+        }
+        catch (Exception)
+        {
+
+            OutputMessage("Error: Unable to write data to serial port.");
+
+        }
+        finally
+        {
+
+            this.txtSerialData.ScrollToIter(txtSerialData.Buffer.EndIter, 0, false, 0, 0);
+            this.txtSerialData.Buffer.PlaceCursor(this.txtSerialData.Buffer.EndIter);
+
+            QueueDraw();
+
+        }
+
+    }
+
+    public void onChangeEvent(object sender, EventArgs e)
+    {
+
+        if (_tabPressed)
+        {
+            this.txtSerialData.Buffer.Text = this.txtSerialData.Buffer.Text.TrimEnd('\t');
+            _tabPressed = false;
+        }
+
+    }
+
 }
