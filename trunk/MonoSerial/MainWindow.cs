@@ -178,10 +178,10 @@ public partial class MainWindow : Gtk.Window
             IniData data = aParser.ReadFile(_iniFileName);
 
             // SerialPort
-			this.cmbPort.InsertText(0, data["SerialPort"]["Name"]);
-			this.cmbPort.Active = 0;
-			this.cmbBaudRate.InsertText(0, data["SerialPort"]["Speed"]);
-			this.cmbBaudRate.Active = 0;
+            this.cmbPort.InsertText(0, data["SerialPort"]["Name"]);
+            this.cmbPort.Active = 0;
+            this.cmbBaudRate.InsertText(0, data["SerialPort"]["Speed"]);
+            this.cmbBaudRate.Active = 0;
             this.cmbParity.Active = Int32.Parse(data["SerialPort"]["Parity"]);
             this.cmbStopBits.Active = Int32.Parse(data["SerialPort"]["Stopbit"]);
 
@@ -336,7 +336,7 @@ public partial class MainWindow : Gtk.Window
             {
 
                 _serialPort.PortName = cmbPort.ActiveText;
-				_serialPort.BaudRate = Int32.Parse(this.cmbBaudRate.ActiveText);
+                _serialPort.BaudRate = Int32.Parse(this.cmbBaudRate.ActiveText);
                 _serialPort.Parity = GetParity(this.cmbParity.ActiveText);
                 _serialPort.StopBits = GetStopBits(this.cmbStopBits.ActiveText);
                 _serialPort.ReadTimeout = 200;
@@ -499,35 +499,35 @@ public partial class MainWindow : Gtk.Window
     {
 
         if (key == Gdk.Key.Shift_R ||
-             key == Gdk.Key.Shift_L ||
-             key == Gdk.Key.Control_R ||
-             key == Gdk.Key.Control_L ||
+            key == Gdk.Key.Shift_L ||
+            key == Gdk.Key.Control_R ||
+            key == Gdk.Key.Control_L ||
             key == Gdk.Key.Alt_R ||
             key == Gdk.Key.Alt_L ||
-              key == Gdk.Key.Caps_Lock ||
-              key == Gdk.Key.Num_Lock ||
+            key == Gdk.Key.Caps_Lock ||
+            key == Gdk.Key.Num_Lock ||
             key == Gdk.Key.Scroll_Lock ||
             key == Gdk.Key.Print ||
-             key == Gdk.Key.Home ||
-             key == Gdk.Key.End ||
-             key == Gdk.Key.Page_Down ||
-             key == Gdk.Key.Page_Up ||
+            key == Gdk.Key.Home ||
+            key == Gdk.Key.End ||
+            key == Gdk.Key.Page_Down ||
+            key == Gdk.Key.Page_Up ||
             key == Gdk.Key.Escape ||
-             key == Gdk.Key.Delete ||
+            key == Gdk.Key.Delete ||
             key == Gdk.Key.Insert ||
-             key == Gdk.Key.Pause ||
-             key == Gdk.Key.F1 ||
-             key == Gdk.Key.F2 ||
-             key == Gdk.Key.F3 ||
-             key == Gdk.Key.F4 ||
-               key == Gdk.Key.F5 ||
-               key == Gdk.Key.F6 ||
-               key == Gdk.Key.F7 ||
+            key == Gdk.Key.Pause ||
+            key == Gdk.Key.F1 ||
+            key == Gdk.Key.F2 ||
+            key == Gdk.Key.F3 ||
+            key == Gdk.Key.F4 ||
+            key == Gdk.Key.F5 ||
+            key == Gdk.Key.F6 ||
+            key == Gdk.Key.F7 ||
             key == Gdk.Key.F8 ||
-               key == Gdk.Key.F9 ||
-               key == Gdk.Key.F10 ||
+            key == Gdk.Key.F9 ||
+            key == Gdk.Key.F10 ||
             key == Gdk.Key.F11 ||
-             key == Gdk.Key.F12 ||
+            key == Gdk.Key.F12 ||
             key == Gdk.Key.KP_Multiply ||
             key == Gdk.Key.KP_Divide ||
             key == Gdk.Key.KP_1 ||
