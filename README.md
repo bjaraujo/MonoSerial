@@ -10,5 +10,5 @@ In Linux it might be necessary to change serial port permissions:
 
 or more radical:
 
-`sudo chmod 666 /dev/ttys0`
+`sudo chmod 666 /dev/ttyS0`
 
