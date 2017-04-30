@@ -478,6 +478,47 @@ public partial class MainWindow : Gtk.Window
 
 	}
 
+	protected bool isSpecialKey(Gdk.Key key)
+	{
+
+		if (key == Gdk.Key.Shift_R ||
+		 	key == Gdk.Key.Shift_L ||
+		 	key == Gdk.Key.Control_R ||
+		 	key == Gdk.Key.Control_L ||
+			key == Gdk.Key.Alt_R ||
+			key == Gdk.Key.Alt_L ||
+		  	key == Gdk.Key.Caps_Lock ||
+		    key == Gdk.Key.Print ||
+		 	key == Gdk.Key.Home ||
+		 	key == Gdk.Key.End ||
+		 	key == Gdk.Key.Page_Down ||
+		 	key == Gdk.Key.Page_Up ||
+		    key == Gdk.Key.Escape ||
+		 	key == Gdk.Key.Delete ||
+		    key == Gdk.Key.Insert ||
+		 	key == Gdk.Key.Pause ||
+		 	key == Gdk.Key.F1 ||
+		 	key == Gdk.Key.F2 ||
+		 	key == Gdk.Key.F3 ||
+		 	key == Gdk.Key.F4 ||
+		   	key == Gdk.Key.F5 ||
+		   	key == Gdk.Key.F6 ||
+		   	key == Gdk.Key.F7 ||
+			key == Gdk.Key.F8 ||
+		   	key == Gdk.Key.F9 ||
+		   	key == Gdk.Key.F10 ||
+			key == Gdk.Key.F11 ||
+		 	key == Gdk.Key.F12)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+
+	}
+
 	protected void OnTxtSerialDataKeyReleaseEvent(object o, KeyReleaseEventArgs args)
 	{
 
@@ -486,7 +527,10 @@ public partial class MainWindow : Gtk.Window
 
 			_keyPressed = true;
             _tabPressed = false;
-            
+
+			if (isSpecialKey(args.Event.Key))
+				return;
+
 			if (args.Event.Key == Gdk.Key.Return)
 			{
 				_outBuffer[0] = '\r';
@@ -503,18 +547,6 @@ public partial class MainWindow : Gtk.Window
                 _tabPressed = true;
 				_outBuffer[0] = (char)9;
 				_serialPort.Write(_outBuffer, 0, 1);
-			}
-			else if (args.Event.Key == Gdk.Key.Shift_R ||
-					 args.Event.Key == Gdk.Key.Shift_L ||
-					 args.Event.Key == Gdk.Key.Control_R ||
-					 args.Event.Key == Gdk.Key.Control_L ||
- 			    	 args.Event.Key == Gdk.Key.Caps_Lock ||
-			         args.Event.Key == Gdk.Key.Home ||
-					 args.Event.Key == Gdk.Key.End ||
-					 args.Event.Key == Gdk.Key.Page_Down ||
-			         args.Event.Key == Gdk.Key.Page_Up)
-			{
-				// Do nothing
 			}
 			else
             {
