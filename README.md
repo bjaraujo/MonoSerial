@@ -6,5 +6,9 @@ Cross platform serial port terminal developed with Mono/GTK.
 
 In Linux it might be necessary to change serial port permissions:
 
- `sudo chmod 666 /dev/ttys0`
+`sudo adduser USER_NAME dialout`
+
+or more radical:
+
+`sudo chmod 666 /dev/ttys0`
 
