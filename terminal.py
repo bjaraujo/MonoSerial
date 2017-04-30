@@ -10,7 +10,7 @@ ser.write('> ')
 while True:
 	char = ser.read()
 
-	if (ord(char) == 13):
+	if (ord(char) == 13 or ord(char) == 10):
 
 		ser.write('\n')
 
